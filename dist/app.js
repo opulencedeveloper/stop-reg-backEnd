@@ -13,6 +13,8 @@ const enum_1 = require("./src/utils/enum");
 const router_1 = require("./src/auth/router");
 const general_1 = __importDefault(require("./src/middleware/general"));
 const utils_1 = require("./src/utils");
+const router_2 = require("./src/subscriptionPlan/router");
+const router_3 = require("./src/user/router");
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 const port = process.env.PORT || 8080;
@@ -28,7 +30,7 @@ const StartServer = () => {
     app.use(general_1.default.Helmet);
     app.use(general_1.default.RateLimiting);
     app.use((0, cors_1.default)({
-        origin: ["http://localhost:3000"],
+        origin: ["http://127.0.0.1:5500"],
         credentials: true,
     }));
     app.use(express_1.default.json({ limit: "10mb" }));
@@ -43,6 +45,8 @@ const StartServer = () => {
         next();
     });
     app.use("/api/v1/auth", router_1.AuthRouter);
+    app.use("/api/v1/subscription", router_2.SubscriptionPlanRouter);
+    app.use("/api/v1/user", router_3.UserRouter);
     app.get("/api/v1/healthcheck", (_req, res) => {
         res.status(200).json({ status: "UP 🔥🔧🎂" });
     });

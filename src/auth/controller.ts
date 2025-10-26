@@ -8,10 +8,12 @@ import { MessageResponse } from "../utils/enum";
 import { userService } from "../user/service";
 import { IRegisterUserInput } from "./interface";
 import { utils } from "../utils";
+import { subscriptionPlanService } from "../subscriptionPlan/service";
+import { SubPlan } from "../subscriptionPlan/enum";
 
 dotenv.config();
 
-const jwtSecret = process.env.JWT_SECRET || "";
+const jwtSecret = process.env.JWT_SECRET!;
 
 class AuthController {
   public async registerUser(req: Request, res: Response) {
@@ -29,9 +31,35 @@ class AuthController {
         description: "Email already exist!",
         data: null,
       });
-    } 
+    }
 
-    await userService.createUser(body);
+    const plan = await subscriptionPlanService.findPlanByName(SubPlan.Free);
+
+    console.log(plan)
+
+    if (!plan) {
+      return utils.customResponse({
+        status: 400,
+        res,
+        message: MessageResponse.Error,
+        description: "Could not complete!",
+        data: null,
+      });
+    }
+    const tokenExpiresAt = new Date();
+    tokenExpiresAt.setDate(tokenExpiresAt.getDate() + plan.durationInDays);
+
+    const apiToken = utils.generateApiToken();
+
+    const apiRequestLeft = plan.apiLimit;
+
+    await userService.createUser({
+      ...body,
+      planId: plan._id,
+      tokenExpiresAt,
+      apiRequestLeft,
+      apiToken,
+    });
 
     return utils.customResponse({
       status: 201,

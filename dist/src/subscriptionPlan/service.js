@@ -12,32 +12,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userService = void 0;
-const auth_1 = require("../utils/auth");
+exports.subscriptionPlanService = void 0;
 const entity_1 = __importDefault(require("./entity"));
-class UserService {
-    createUser(input) {
+class SubscriptionPlanService {
+    createSubPlan(input) {
         return __awaiter(this, void 0, void 0, function* () {
-            const password = input.password;
-            const hashedPassword = (yield (0, auth_1.hashPassword)(password));
-            const user = new entity_1.default(Object.assign(Object.assign({}, input), { password: hashedPassword }));
-            yield user.save();
+            const subPlan = new entity_1.default(Object.assign({}, input));
+            yield subPlan.save();
             return;
         });
     }
-    findUserByEmail(email) {
+    findPlanByName(name) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield entity_1.default.findOne({
-                email,
-            });
-            return user;
+            const plan = yield entity_1.default.findOne({ name });
+            return plan;
         });
     }
-    findUserById(id) {
+    findPlans() {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield entity_1.default.findById(id).select("-password");
-            return user;
+            const plans = yield entity_1.default.find();
+            return plans;
         });
     }
 }
-exports.userService = new UserService();
+exports.subscriptionPlanService = new SubscriptionPlanService();

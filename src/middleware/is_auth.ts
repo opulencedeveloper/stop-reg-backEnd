@@ -11,7 +11,6 @@ dotenv.config();
 
 interface DecodedToken extends JwtPayload {
   userId: string;
-  userType: string;
 }
 
 export const isAuth = async (
@@ -20,6 +19,8 @@ export const isAuth = async (
   next: NextFunction
 ) => {
   const authHeader = req.get("Authorization");
+
+
 
   if (!authHeader) {
     return utils.customResponse({
@@ -46,7 +47,7 @@ export const isAuth = async (
     });
   }
 
-  if (!decodedToken || !decodedToken.userId || !decodedToken.userType) {
+  if (!decodedToken || !decodedToken.userId) {
     return utils.customResponse({
       status: 401,
       res,
@@ -57,7 +58,6 @@ export const isAuth = async (
   }
 
   (req as CustomRequest).userId = new mongoose.Types.ObjectId(decodedToken.userId);
-  (req as CustomRequest).userType = decodedToken.userType;
 
   next();
 };

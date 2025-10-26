@@ -1,10 +1,12 @@
+import { Types } from "mongoose";
+
 export interface IRegisterUserInput {
   email: string;
   password: string;
   confirmPassword: string;
 }
 
-export interface IRegisterInput {
+export interface IRegisterUserInput {
   email: string;
   password: string;
 }

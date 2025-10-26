@@ -1,9 +1,22 @@
-import { Types } from "mongoose";
+import { Document, Types } from "mongoose";
 
-export interface IUser {
-  _id?: Types.ObjectId;
+export interface IUser extends Document {
+  _id: Types.ObjectId;
+  planId: Types.ObjectId;
+  tokenExpiresAt: Date;
+  apiToken: string;
+  apiRequestLeft: number | null;
   email: string;
   password: string;
-  updatedAt?: Date;
-  createdAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IRegisterInput {
+  planId: Types.ObjectId;
+  tokenExpiresAt: Date;
+  apiRequestLeft: number | null; 
+  apiToken: string;
+  email: string;
+  password: string;
 }

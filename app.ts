@@ -10,6 +10,8 @@ import { ErrorName, MessageResponse } from "./src/utils/enum";
 import { AuthRouter } from "./src/auth/router";
 import GeneralMiddleware from "./src/middleware/general";
 import { utils } from "./src/utils";
+import { SubscriptionPlanRouter } from "./src/subscriptionPlan/router";
+import { UserRouter } from "./src/user/router";
 
 const app: Express = express();
 
@@ -38,7 +40,7 @@ const StartServer = () => {
 
   app.use(
     cors({
-      origin: ["http://localhost:3000"],
+      origin: ["http://127.0.0.1:5500"],
       credentials: true,
     })
   );
@@ -64,6 +66,8 @@ const StartServer = () => {
   });
 
   app.use("/api/v1/auth", AuthRouter);
+  app.use("/api/v1/subscription", SubscriptionPlanRouter);
+  app.use("/api/v1/user", UserRouter);
 
   app.get("/api/v1/healthcheck", (_req: Request, res: Response) => {
     res.status(200).json({ status: "UP 🔥🔧🎂" });

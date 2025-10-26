@@ -1,6 +1,8 @@
-import { IRegisterInput } from "../auth/interface";
+import { Types } from "mongoose";
+import { IRegisterUserInput } from "../auth/interface";
 import { hashPassword } from "../utils/auth";
 import User from "./entity";
+import { IRegisterInput } from "./interface";
 
 class UserService {
   public async createUser(input: IRegisterInput) {
@@ -21,6 +23,12 @@ class UserService {
     const user = await User.findOne({
       email,
     });
+
+    return user;
+  }
+
+    public async findUserById(id: Types.ObjectId) {
+    const user = await User.findById(id).select("-password");
 
     return user;
   }

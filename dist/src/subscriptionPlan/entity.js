@@ -34,38 +34,30 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const userSchema = new mongoose_1.Schema({
-    planId: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: "SubscriptionPlan",
-        required: true,
-    },
-    tokenExpiresAt: {
-        type: Date,
-        required: true,
-    },
-    apiToken: {
+const enum_1 = require("./enum");
+const subscriptionPlanSchema = new mongoose_1.Schema({
+    name: {
         type: String,
         required: true,
+        enum: Object.values(enum_1.SubPlan),
+        unique: true,
     },
-    apiRequestLeft: {
+    monthlyPrice: {
+        type: Number,
+        required: true,
+    },
+    apiLimit: {
         type: Number,
         default: null,
-        required: true,
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true,
+    durationInDays: {
+        type: Number,
+        default: 30,
     },
-    password: {
-        type: String,
-        required: true,
+    isRecommended: {
+        type: Boolean,
+        default: false,
     },
-}, {
-    timestamps: true,
-});
-const User = mongoose_1.default.model("User", userSchema);
-exports.default = User;
+}, { timestamps: true });
+const SubscriptionPlan = mongoose_1.default.model("SubscriptionPlan", subscriptionPlanSchema);
+exports.default = SubscriptionPlan;

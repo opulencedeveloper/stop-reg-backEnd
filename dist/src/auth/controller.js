@@ -19,8 +19,10 @@ const auth_1 = require("../utils/auth");
 const enum_1 = require("../utils/enum");
 const service_1 = require("../user/service");
 const utils_1 = require("../utils");
+const service_2 = require("../subscriptionPlan/service");
+const enum_2 = require("../subscriptionPlan/enum");
 dotenv_1.default.config();
-const jwtSecret = process.env.JWT_SECRET || "";
+const jwtSecret = process.env.JWT_SECRET;
 class AuthController {
     registerUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -36,7 +38,24 @@ class AuthController {
                     data: null,
                 });
             }
-            yield service_1.userService.createUser(body);
+            const plan = yield service_2.subscriptionPlanService.findPlanByName(enum_2.SubPlan.Free);
+            console.log(plan);
+            if (!plan) {
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "Could not complete!",
+                    data: null,
+                });
+            }
+            const tokenExpiresAt = new Date();
+            tokenExpiresAt.setDate(tokenExpiresAt.getDate() + plan.durationInDays);
+            const apiToken = utils_1.utils.generateApiToken();
+            const apiRequestLeft = plan.apiLimit;
+            yield service_1.userService.createUser(Object.assign(Object.assign({}, body), { planId: plan._id, tokenExpiresAt,
+                apiRequestLeft,
+                apiToken }));
             return utils_1.utils.customResponse({
                 status: 201,
                 res,

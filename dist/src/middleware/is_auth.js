@@ -44,7 +44,7 @@ const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             data: null,
         });
     }
-    if (!decodedToken || !decodedToken.userId || !decodedToken.userType) {
+    if (!decodedToken || !decodedToken.userId) {
         return utils_1.utils.customResponse({
             status: 401,
             res,
@@ -54,7 +54,6 @@ const isAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
     req.userId = new mongoose_1.default.Types.ObjectId(decodedToken.userId);
-    req.userType = decodedToken.userType;
     next();
 });
 exports.isAuth = isAuth;
