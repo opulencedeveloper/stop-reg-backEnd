@@ -20,3 +20,16 @@ export interface IRegisterInput {
   email: string;
   password: string;
 }
+
+
+export interface IUpdatePasswordUserInput {
+   currentPassword: string;
+  password: string;
+  confirmPassword: string;
+}
+
+
+export interface IUpdatePasswordInput {
+  password: string;
+  userId: Types.ObjectId;
+}

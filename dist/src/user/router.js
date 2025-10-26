@@ -5,5 +5,7 @@ const express_1 = require("express");
 const controller_1 = require("./controller");
 const is_auth_1 = require("../middleware/is_auth");
 const utils_1 = require("../utils");
+const validator_1 = require("./validator");
 exports.UserRouter = (0, express_1.Router)();
 exports.UserRouter.get("/info", [is_auth_1.isAuth], utils_1.utils.wrapAsync(controller_1.userController.fetchUserDetails));
+exports.UserRouter.patch("/update/password", [is_auth_1.isAuth, validator_1.userValidator.updateUserPassword], utils_1.utils.wrapAsync(controller_1.userController.updatePassword));

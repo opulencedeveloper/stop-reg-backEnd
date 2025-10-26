@@ -13,17 +13,64 @@ exports.userController = void 0;
 const service_1 = require("./service");
 const utils_1 = require("../utils");
 const enum_1 = require("../utils/enum");
+const auth_1 = require("../utils/auth");
 class UserController {
     fetchUserDetails(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { userId } = req;
-            const userDetails = yield service_1.userService.findUserById(userId);
+            const userDetails = yield service_1.userService.findUserByIdWithoutPassword(userId);
             return utils_1.utils.customResponse({
                 status: 200,
                 res,
                 message: enum_1.MessageResponse.Success,
                 description: "Logged in successfully",
                 data: userDetails,
+            });
+        });
+    }
+    updatePassword(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const body = req.body;
+            const { userId } = req;
+            const userExists = yield service_1.userService.findUserByIdWithPassword(userId);
+            if (!userExists) {
+                return utils_1.utils.customResponse({
+                    status: 404,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "User not found!",
+                    data: null,
+                });
+            }
+            const match = yield (0, auth_1.comparePassword)(body.currentPassword, userExists.password);
+            if (!match) {
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "Current password is not correct!",
+                    data: null,
+                });
+            }
+            const updatedUser = yield service_1.userService.editPasswordById({
+                password: body.password,
+                userId: userId,
+            });
+            if (!updatedUser) {
+                return utils_1.utils.customResponse({
+                    status: 404,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "User not found!",
+                    data: null,
+                });
+            }
+            return utils_1.utils.customResponse({
+                status: 200,
+                res,
+                message: enum_1.MessageResponse.Success,
+                description: "Password updated successfully",
+                data: null,
             });
         });
     }

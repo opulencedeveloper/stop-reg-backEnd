@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { IRegisterUserInput } from "../auth/interface";
 import { hashPassword } from "../utils/auth";
 import User from "./entity";
-import { IRegisterInput } from "./interface";
+import { IRegisterInput, IUpdatePasswordInput } from "./interface";
 
 class UserService {
   public async createUser(input: IRegisterInput) {
@@ -11,12 +11,12 @@ class UserService {
 
     const user = new User({
       ...input,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     await user.save();
 
-    return
+    return;
   }
 
   public async findUserByEmail(email: string) {
@@ -27,10 +27,31 @@ class UserService {
     return user;
   }
 
-    public async findUserById(id: Types.ObjectId) {
+  public async findUserByIdWithoutPassword(id: Types.ObjectId) {
     const user = await User.findById(id).select("-password");
 
     return user;
+  }
+
+    public async findUserByIdWithPassword(id: Types.ObjectId) {
+    const user = await User.findById(id);
+
+    return user;
+  }
+
+
+  public async editPasswordById(input: IUpdatePasswordInput) {
+    const { userId, password } = input;
+
+     const hashedPassword = (await hashPassword(password)) as string;
+
+    const updatedMenu = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: {password: hashedPassword} },
+      { new: true, runValidators: true }
+    );
+
+    return updatedMenu;
   }
 }
 

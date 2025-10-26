@@ -56,60 +56,22 @@ const StartServer = () => {
         return res.status(404).json({ message: _error.message });
     });
     app.use((err, _req, res, _next) => {
+        // Log detailed error information on server (never expose to client)
         loggin_1.default.error(`Error occurred: ${err.message}`);
-        loggin_1.default.error(err.stack);
-        if (err.name === enum_1.ErrorName.ValidationError) {
-            return utils_1.utils.customResponse({
-                status: 400,
-                res,
-                message: enum_1.MessageResponse.Error,
-                description: "Validation Error",
-                data: null,
-            });
+        loggin_1.default.error(`Error name: ${err.name}`);
+        loggin_1.default.error(`Error stack: ${err.stack}`);
+        // In production, also log request details for debugging
+        if (process.env.NODE_ENV === "production") {
+            loggin_1.default.error(`Request URL: ${_req.url}`);
+            loggin_1.default.error(`Request Method: ${_req.method}`);
+            loggin_1.default.error(`Request IP: ${_req.socket.remoteAddress}`);
         }
-        if (err.name === enum_1.ErrorName.CastError) {
-            return utils_1.utils.customResponse({
-                status: 400,
-                res,
-                message: enum_1.MessageResponse.Error,
-                description: "Invalid ID format",
-                data: null,
-            });
-        }
-        if (err.name === enum_1.ErrorName.JsonWebTokenError) {
-            return utils_1.utils.customResponse({
-                status: 401,
-                res,
-                message: enum_1.MessageResponse.Error,
-                description: "Invalid token",
-                data: null,
-            });
-        }
-        if (err.name === enum_1.ErrorName.TokenExpiredError) {
-            return utils_1.utils.customResponse({
-                status: 401,
-                res,
-                message: enum_1.MessageResponse.Error,
-                description: "Token expired",
-                data: null,
-            });
-        }
-        if (err.name === enum_1.ErrorName.MongoServerError && err.code === 11000) {
-            return utils_1.utils.customResponse({
-                status: 409,
-                res,
-                message: enum_1.MessageResponse.Error,
-                description: "Duplicate key error",
-                data: null,
-            });
-        }
+        // Return generic error message to frontend (never expose internal details)
         return utils_1.utils.customResponse({
-            status: err.status || 500,
+            status: 500,
             res,
             message: enum_1.MessageResponse.Error,
-            description: process.env.NODE_ENV === "production"
-                ? "Internal Server Error"
-                : err.message,
+            description: "Internal Server Error",
             data: null,
         });
     });

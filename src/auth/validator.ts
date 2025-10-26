@@ -75,6 +75,8 @@ class AuthValidator {
       });
     }
   }
+
+  
 }
 
 export const authValidator = new AuthValidator();

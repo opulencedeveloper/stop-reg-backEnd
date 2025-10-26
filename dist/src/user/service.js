@@ -33,10 +33,24 @@ class UserService {
             return user;
         });
     }
-    findUserById(id) {
+    findUserByIdWithoutPassword(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield entity_1.default.findById(id).select("-password");
             return user;
+        });
+    }
+    findUserByIdWithPassword(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield entity_1.default.findById(id);
+            return user;
+        });
+    }
+    editPasswordById(input) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userId, password } = input;
+            const hashedPassword = (yield (0, auth_1.hashPassword)(password));
+            const updatedMenu = yield entity_1.default.findOneAndUpdate({ _id: userId }, { $set: { password: hashedPassword } }, { new: true, runValidators: true });
+            return updatedMenu;
         });
     }
 }

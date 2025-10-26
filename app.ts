@@ -82,67 +82,24 @@ const StartServer = () => {
   });
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    // Log detailed error information on server (never expose to client)
     Logging.error(`Error occurred: ${err.message}`);
-    Logging.error(err.stack);
-
-    if (err.name === ErrorName.ValidationError) {
-      return utils.customResponse({
-        status: 400,
-        res,
-        message: MessageResponse.Error,
-        description: "Validation Error",
-        data: null,
-      });
+    Logging.error(`Error name: ${err.name}`);
+    Logging.error(`Error stack: ${err.stack}`);
+    
+    // In production, also log request details for debugging
+    if (process.env.NODE_ENV === "production") {
+      Logging.error(`Request URL: ${_req.url}`);
+      Logging.error(`Request Method: ${_req.method}`);
+      Logging.error(`Request IP: ${_req.socket.remoteAddress}`);
     }
 
-    if (err.name === ErrorName.CastError) {
-      return utils.customResponse({
-        status: 400,
-        res,
-        message: MessageResponse.Error,
-        description: "Invalid ID format",
-        data: null,
-      });
-    }
-
-    if (err.name === ErrorName.JsonWebTokenError) {
-      return utils.customResponse({
-        status: 401,
-        res,
-        message: MessageResponse.Error,
-        description: "Invalid token",
-        data: null,
-      });
-    }
-
-    if (err.name === ErrorName.TokenExpiredError) {
-      return utils.customResponse({
-        status: 401,
-        res,
-        message: MessageResponse.Error,
-        description: "Token expired",
-        data: null,
-      });
-    }
-
-    if (err.name === ErrorName.MongoServerError && err.code === 11000) {
-      return utils.customResponse({
-        status: 409,
-        res,
-        message: MessageResponse.Error,
-        description: "Duplicate key error",
-        data: null,
-      });
-    }
-
+    // Return generic error message to frontend (never expose internal details)
     return utils.customResponse({
-      status: err.status || 500,
+      status: 500,
       res,
       message: MessageResponse.Error,
-      description:
-        process.env.NODE_ENV === "production"
-          ? "Internal Server Error"
-          : err.message,
+      description: "Internal Server Error",
       data: null,
     });
   });
