@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ManageDomainRouter = void 0;
+const express_1 = require("express");
+const controller_1 = require("./controller");
+const is_auth_1 = require("../middleware/is_auth");
+const utils_1 = require("../utils");
+const validator_1 = require("./validator");
+exports.ManageDomainRouter = (0, express_1.Router)();
+exports.ManageDomainRouter.post("/add", [is_auth_1.isAuth, validator_1.manageDomainValidator.addDomain], utils_1.utils.wrapAsync(controller_1.manageDomainController.addDomain));
+exports.ManageDomainRouter.get("/fetch", [is_auth_1.isAuth], utils_1.utils.wrapAsync(controller_1.manageDomainController.fetchUserDomains));

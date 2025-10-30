@@ -1,5 +1,4 @@
 import { Types } from "mongoose";
-import { IRegisterUserInput } from "../auth/interface";
 import { hashPassword } from "../utils/auth";
 import User from "./entity";
 import { IRegisterInput, IUpdatePasswordInput } from "./interface";
@@ -23,6 +22,12 @@ class UserService {
     const user = await User.findOne({
       email,
     });
+
+    return user;
+  }
+
+   public async findUserById(userId: Types.ObjectId) {
+    const user = await User.findById(userId);
 
     return user;
   }

@@ -33,6 +33,12 @@ class UserService {
             return user;
         });
     }
+    findUserById(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield entity_1.default.findById(userId);
+            return user;
+        });
+    }
     findUserByIdWithoutPassword(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield entity_1.default.findById(id)

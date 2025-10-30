@@ -15,6 +15,7 @@ const general_1 = __importDefault(require("./src/middleware/general"));
 const utils_1 = require("./src/utils");
 const router_2 = require("./src/subscriptionPlan/router");
 const router_3 = require("./src/user/router");
+const router_4 = require("./src/manageDomain/router");
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 const port = process.env.PORT || 8080;
@@ -47,6 +48,7 @@ const StartServer = () => {
     app.use("/api/v1/auth", router_1.AuthRouter);
     app.use("/api/v1/subscription", router_2.SubscriptionPlanRouter);
     app.use("/api/v1/user", router_3.UserRouter);
+    app.use("/api/v1/manage/domain", router_4.ManageDomainRouter);
     app.get("/api/v1/healthcheck", (_req, res) => {
         res.status(200).json({ status: "UP 🔥🔧🎂" });
     });
