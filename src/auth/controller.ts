@@ -5,11 +5,11 @@ import jwt from "jsonwebtoken";
 import { comparePassword } from "../utils/auth";
 import { MessageResponse } from "../utils/enum";
 
-import { userService } from "../user/service";
 import { IRegisterUserInput } from "./interface";
 import { utils } from "../utils";
 import { subscriptionPlanService } from "../subscriptionPlan/service";
 import { SubPlan } from "../subscriptionPlan/enum";
+import { userService } from "../user/service";
 
 dotenv.config();
 
