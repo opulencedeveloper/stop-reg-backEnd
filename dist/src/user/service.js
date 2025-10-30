@@ -35,7 +35,7 @@ class UserService {
     }
     findUserById(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield entity_1.default.findById(userId);
+            const user = yield entity_1.default.findById(userId).lean();
             return user;
         });
     }
@@ -43,13 +43,14 @@ class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield entity_1.default.findById(id)
                 .select("-password")
-                .populate("planId", "name monthlyPrice apiLimit durationInDays isRecommended");
+                .populate("planId", "name monthlyPrice apiLimit durationInDays isRecommended")
+                .lean();
             return user;
         });
     }
     findUserByIdWithPassword(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield entity_1.default.findById(id);
+            const user = yield entity_1.default.findById(id).lean();
             return user;
         });
     }
@@ -65,6 +66,19 @@ class UserService {
         return __awaiter(this, void 0, void 0, function* () {
             const updatedMenu = yield entity_1.default.findOneAndUpdate({ _id: userId }, { $set: { apiToken } }, { new: true, runValidators: true });
             return updatedMenu;
+        });
+    }
+    decrementApiRequestLeft(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const updatedUser = yield entity_1.default.findOneAndUpdate({ _id: userId, apiRequestLeft: { $gt: 0 } }, { $inc: { apiRequestLeft: -1 } }, { new: true, projection: { _id: 1, apiRequestLeft: 1 } }).lean();
+            return updatedUser;
+        });
+    }
+    findUserForRateLimit(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return entity_1.default.findById(userId)
+                .select("_id tokenExpiresAt apiRequestLeft")
+                .lean();
         });
     }
 }

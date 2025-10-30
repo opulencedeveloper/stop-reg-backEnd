@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { ClientSession, Types } from "mongoose";
 import { hashPassword } from "../utils/auth";
 import User from "./entity";
 import { IRegisterInput, IUpdatePasswordInput } from "./interface";
@@ -26,8 +26,8 @@ class UserService {
     return user;
   }
 
-   public async findUserById(userId: Types.ObjectId) {
-    const user = await User.findById(userId);
+  public async findUserById(userId: Types.ObjectId) {
+    const user = await User.findById(userId).lean();
 
     return user;
   }
@@ -35,13 +35,17 @@ class UserService {
   public async findUserByIdWithoutPassword(id: Types.ObjectId) {
     const user = await User.findById(id)
       .select("-password")
-      .populate("planId", "name monthlyPrice apiLimit durationInDays isRecommended");
+      .populate(
+        "planId",
+        "name monthlyPrice apiLimit durationInDays isRecommended"
+      )
+      .lean();
 
     return user;
   }
 
   public async findUserByIdWithPassword(id: Types.ObjectId) {
-    const user = await User.findById(id);
+    const user = await User.findById(id).lean();
 
     return user;
   }
@@ -68,6 +72,22 @@ class UserService {
     );
 
     return updatedMenu;
+  }
+
+  public async decrementApiRequestLeft(userId: Types.ObjectId) {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId, apiRequestLeft: { $gt: 0 } },
+      { $inc: { apiRequestLeft: -1 } },
+      { new: true, projection: { _id: 1, apiRequestLeft: 1 } }
+    ).lean();
+
+    return updatedUser;
+  }
+
+  public async findUserForRateLimit(userId: Types.ObjectId) {
+    return User.findById(userId)
+      .select("_id tokenExpiresAt apiRequestLeft")
+      .lean();
   }
 }
 

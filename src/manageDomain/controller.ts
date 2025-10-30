@@ -5,11 +5,11 @@ import jwt from "jsonwebtoken";
 import { comparePassword } from "../utils/auth";
 import { MessageResponse } from "../utils/enum";
 
-import { userService } from "../user/service";
 import { utils } from "../utils";
 import { CustomRequest } from "../utils/interface";
 import { manageDomainService } from "./service";
 import { IAddDomainUserInput } from "./interface";
+import { userService } from "../user/service";
 
 class ManageDomainController {
   public async addDomain(req: Request, res: Response) {

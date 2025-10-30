@@ -10,7 +10,8 @@ class RequestService {
 
   public async findRequestByUserIdAndSetStatus(
     userId: Types.ObjectId,
-    type: RequestType
+    type: RequestType,
+    planId: Types.ObjectId
   ) {
     const now = new Date();
     const month = now.getMonth() + 1;
@@ -24,6 +25,7 @@ class RequestService {
       { userId, month, year },
       {
         $inc: inc,
+        $set: { planId }, 
         $setOnInsert: { userId, month, year, success: 0, blocked: 0, total: 0 },
       },
       { upsert: true, new: true, runValidators: true }

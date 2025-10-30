@@ -22,7 +22,7 @@ class RequestService {
             return entity_1.default.find({ userId, year: currentYear }).sort({ month: 1 });
         });
     }
-    findRequestByUserIdAndSetStatus(userId, type) {
+    findRequestByUserIdAndSetStatus(userId, type, planId) {
         return __awaiter(this, void 0, void 0, function* () {
             const now = new Date();
             const month = now.getMonth() + 1;
@@ -34,6 +34,7 @@ class RequestService {
                 inc.blocked = 1;
             const result = yield entity_1.default.findOneAndUpdate({ userId, month, year }, {
                 $inc: inc,
+                $set: { planId },
                 $setOnInsert: { userId, month, year, success: 0, blocked: 0, total: 0 },
             }, { upsert: true, new: true, runValidators: true });
             return result;

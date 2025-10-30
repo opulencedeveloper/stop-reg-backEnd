@@ -1,8 +1,9 @@
 import { Document, Types } from "mongoose";
+import { ISubscriptionPlan } from "../subscriptionPlan/interface";
 
 export interface IUser extends Document {
   _id: Types.ObjectId;
-  planId: Types.ObjectId;
+  planId: Types.ObjectId | ISubscriptionPlan;
   fullName?: string;
   tokenExpiresAt: Date;
   apiToken: string;

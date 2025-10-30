@@ -40,6 +40,11 @@ const requestSchema = new mongoose_1.Schema({
         ref: "User",
         required: true,
     },
+    planId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "SubscriptionPlan",
+        required: true,
+    },
     month: {
         type: Number,
         required: true,

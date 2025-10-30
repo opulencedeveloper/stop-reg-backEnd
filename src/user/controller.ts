@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { CustomRequest } from "../utils/interface";
-import { userService } from "./service";
 import { utils } from "../utils";
 import { MessageResponse } from "../utils/enum";
 import { IUpdatePasswordUserInput } from "./interface";
 import { comparePassword } from "../utils/auth";
 import { requestService } from "../request/service";
+import { userService } from "./service";
 
 class UserController {
   public async fetchUserDetails(req: Request, res: Response) {

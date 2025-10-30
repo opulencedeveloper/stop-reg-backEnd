@@ -8,6 +8,11 @@ const requestSchema: Schema<IRequest> = new Schema(
       ref: "User",
       required: true,
     },
+    planId: {
+      type: Schema.Types.ObjectId,
+      ref: "SubscriptionPlan",
+      required: true,
+    },
     month: {
       type: Number,
       required: true,

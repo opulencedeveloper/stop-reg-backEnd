@@ -3,6 +3,7 @@ import { Document, Types } from "mongoose";
 export interface IRequest extends Document {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
+  planId: Types.ObjectId;
   month: number;
   year: number;
   blocked: number;

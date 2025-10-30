@@ -11,15 +11,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.manageDomainController = void 0;
 const enum_1 = require("../utils/enum");
-const service_1 = require("../user/service");
 const utils_1 = require("../utils");
-const service_2 = require("./service");
+const service_1 = require("./service");
+const service_2 = require("../user/service");
 class ManageDomainController {
     addDomain(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const body = req.body;
             const { userId } = req;
-            const userExists = yield service_1.userService.findUserById(userId);
+            const userExists = yield service_2.userService.findUserById(userId);
             if (!userExists) {
                 return utils_1.utils.customResponse({
                     status: 404,
@@ -29,7 +29,7 @@ class ManageDomainController {
                     data: null,
                 });
             }
-            const domainExists = yield service_2.manageDomainService.findDomainByName(body.domain);
+            const domainExists = yield service_1.manageDomainService.findDomainByName(body.domain);
             if (domainExists) {
                 return utils_1.utils.customResponse({
                     status: 404,
@@ -39,7 +39,7 @@ class ManageDomainController {
                     data: null,
                 });
             }
-            const savedManagedDomain = yield service_2.manageDomainService.addDomain(Object.assign(Object.assign({}, body), { userId: userExists._id }));
+            const savedManagedDomain = yield service_1.manageDomainService.addDomain(Object.assign(Object.assign({}, body), { userId: userExists._id }));
             return utils_1.utils.customResponse({
                 status: 201,
                 res,
@@ -52,7 +52,7 @@ class ManageDomainController {
     fetchUserDomains(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { userId } = req;
-            const manageDomains = yield service_2.manageDomainService.findDomainsByUserId(userId);
+            const manageDomains = yield service_1.manageDomainService.findDomainsByUserId(userId);
             return utils_1.utils.customResponse({
                 status: 200,
                 res,

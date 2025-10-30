@@ -13,10 +13,22 @@ exports.emailDomainController = void 0;
 const enum_1 = require("../utils/enum");
 const utils_1 = require("../utils");
 const service_1 = require("./service");
+const service_2 = require("../user/service");
 class EmailDomainController {
     addEmailDomain(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const body = req.body;
+            const { userId } = req;
+            const userExists = yield service_2.userService.findUserForRateLimit(userId);
+            if (!userExists) {
+                return utils_1.utils.customResponse({
+                    status: 404,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "User not found!",
+                    data: null,
+                });
+            }
             const savedManagedDomain = yield service_1.emailDomainService.addEmailDomain(body);
             return utils_1.utils.customResponse({
                 status: 201,
@@ -30,6 +42,38 @@ class EmailDomainController {
     checkDisposableEmail(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const body = req.body;
+            const { userId } = req;
+            const userExists = yield service_2.userService.findUserForRateLimit(userId);
+            if (!userExists) {
+                return utils_1.utils.customResponse({
+                    status: 404,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "User not found!",
+                    data: null,
+                });
+            }
+            if (userExists.tokenExpiresAt < new Date()) {
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "API token has expired. Please renew your subscription.",
+                    data: null,
+                });
+            }
+            if (userExists.apiRequestLeft !== null) {
+                if (userExists.apiRequestLeft === 0) {
+                    return utils_1.utils.customResponse({
+                        status: 403,
+                        res,
+                        message: enum_1.MessageResponse.Error,
+                        description: "API request limit reached for your current plan.",
+                        data: null,
+                    });
+                }
+                yield service_2.userService.decrementApiRequestLeft(userId);
+            }
             const disposableEmail = yield service_1.emailDomainService.checkDisposableEmail(body.email);
             return utils_1.utils.customResponse({
                 status: 200,
@@ -43,6 +87,38 @@ class EmailDomainController {
     bulkDomainVerification(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const body = req.body;
+            const { userId } = req;
+            const userExists = yield service_2.userService.findUserForRateLimit(userId);
+            if (!userExists) {
+                return utils_1.utils.customResponse({
+                    status: 404,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "User not found!",
+                    data: null,
+                });
+            }
+            if (userExists.tokenExpiresAt < new Date()) {
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "API token has expired. Please renew your subscription.",
+                    data: null,
+                });
+            }
+            if (userExists.apiRequestLeft !== null) {
+                if (userExists.apiRequestLeft === 0) {
+                    return utils_1.utils.customResponse({
+                        status: 403,
+                        res,
+                        message: enum_1.MessageResponse.Error,
+                        description: "API request limit reached for your current plan.",
+                        data: null,
+                    });
+                }
+                yield service_2.userService.decrementApiRequestLeft(userId);
+            }
             const bulkVerification = yield service_1.emailDomainService.verifyBulkDomains(body.domains);
             return utils_1.utils.customResponse({
                 status: 200,
