@@ -14,17 +14,19 @@ const service_1 = require("./service");
 const utils_1 = require("../utils");
 const enum_1 = require("../utils/enum");
 const auth_1 = require("../utils/auth");
+const service_2 = require("../request/service");
 class UserController {
     fetchUserDetails(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { userId } = req;
             const userDetails = yield service_1.userService.findUserByIdWithoutPassword(userId);
+            const request = yield service_2.requestService.findRequestByUserId(userId);
             return utils_1.utils.customResponse({
                 status: 200,
                 res,
                 message: enum_1.MessageResponse.Success,
                 description: "Logged in successfully",
-                data: userDetails,
+                data: { userDetails, request },
             });
         });
     }
@@ -71,6 +73,20 @@ class UserController {
                 message: enum_1.MessageResponse.Success,
                 description: "Password updated successfully",
                 data: null,
+            });
+        });
+    }
+    regenerateUserToken(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userId } = req;
+            const apiToken = utils_1.utils.generateApiToken();
+            const user = yield service_1.userService.regeneratUserToken(apiToken, userId);
+            return utils_1.utils.customResponse({
+                status: 200,
+                res,
+                message: enum_1.MessageResponse.Success,
+                description: "API token regenerated successfully",
+                data: { apiToken },
             });
         });
     }

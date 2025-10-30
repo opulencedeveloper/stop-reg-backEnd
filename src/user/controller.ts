@@ -5,6 +5,7 @@ import { utils } from "../utils";
 import { MessageResponse } from "../utils/enum";
 import { IUpdatePasswordUserInput } from "./interface";
 import { comparePassword } from "../utils/auth";
+import { requestService } from "../request/service";
 
 class UserController {
   public async fetchUserDetails(req: Request, res: Response) {
@@ -12,14 +13,17 @@ class UserController {
 
     const userDetails = await userService.findUserByIdWithoutPassword(userId!);
 
+    const request = await requestService.findRequestByUserId(userId!);
+
     return utils.customResponse({
       status: 200,
       res,
       message: MessageResponse.Success,
       description: "Logged in successfully",
-      data: userDetails,
+      data: { userDetails, request },
     });
   }
+
   public async updatePassword(req: Request, res: Response) {
     const body: IUpdatePasswordUserInput = req.body;
 
@@ -73,6 +77,22 @@ class UserController {
       message: MessageResponse.Success,
       description: "Password updated successfully",
       data: null,
+    });
+  }
+
+  public async regenerateUserToken(req: Request, res: Response) {
+    const { userId } = req as CustomRequest;
+
+    const apiToken = utils.generateApiToken();
+
+    const user = await userService.regeneratUserToken(apiToken, userId!);
+
+    return utils.customResponse({
+      status: 200,
+      res,
+      message: MessageResponse.Success,
+      description: "API token regenerated successfully",
+      data: { apiToken },
     });
   }
 }

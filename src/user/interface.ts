@@ -3,6 +3,7 @@ import { Document, Types } from "mongoose";
 export interface IUser extends Document {
   _id: Types.ObjectId;
   planId: Types.ObjectId;
+  fullName?: string;
   tokenExpiresAt: Date;
   apiToken: string;
   apiRequestLeft: number | null;

@@ -34,45 +34,42 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const userSchema = new mongoose_1.Schema({
-    planId: {
+const requestSchema = new mongoose_1.Schema({
+    userId: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: "SubscriptionPlan",
+        ref: "User",
         required: true,
     },
-    tokenExpiresAt: {
-        type: Date,
-        trim: true,
-        required: true,
-    },
-    apiToken: {
-        type: String,
-        trim: true,
-        required: true,
-    },
-    fullName: {
-        type: String,
-        default: "",
-        trim: true,
-    },
-    apiRequestLeft: {
+    month: {
         type: Number,
-        default: null,
         required: true,
+        min: 1,
+        max: 12,
     },
-    email: {
-        type: String,
+    year: {
+        type: Number,
         required: true,
-        unique: true,
-        lowercase: true,
-        trim: true,
+        min: 2020,
     },
-    password: {
-        type: String,
+    blocked: {
+        type: Number,
         required: true,
+        default: 0,
+    },
+    success: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    total: {
+        type: Number,
+        required: true,
+        default: 0,
     },
 }, {
     timestamps: true,
 });
-const User = mongoose_1.default.model("User", userSchema);
-exports.default = User;
+// Create compound index for efficient querying
+requestSchema.index({ userId: 1, month: 1, year: 1 }, { unique: true });
+const Request = mongoose_1.default.model("Request", requestSchema);
+exports.default = Request;

@@ -10,11 +10,18 @@ const userSchema: Schema = new Schema(
     },
     tokenExpiresAt: {
       type: Date,
+      trim: true,
       required: true,
     },
     apiToken: {
       type: String,
+      trim: true,
       required: true,
+    },
+    fullName: {
+      type: String,
+      default: "",
+      trim: true,
     },
     apiRequestLeft: {
       type: Number,

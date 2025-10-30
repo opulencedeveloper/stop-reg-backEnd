@@ -18,3 +18,9 @@ UserRouter.patch(
   [isAuth, userValidator.updateUserPassword],
   utils.wrapAsync(userController.updatePassword)
 );
+
+UserRouter.patch(
+  "/regenerate/token",
+  [isAuth],
+  utils.wrapAsync(userController.regenerateUserToken)
+);

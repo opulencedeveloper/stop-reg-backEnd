@@ -28,26 +28,37 @@ class UserService {
   }
 
   public async findUserByIdWithoutPassword(id: Types.ObjectId) {
-    const user = await User.findById(id).select("-password");
+    const user = await User.findById(id)
+      .select("-password")
+      .populate("planId", "name monthlyPrice apiLimit durationInDays isRecommended");
 
     return user;
   }
 
-    public async findUserByIdWithPassword(id: Types.ObjectId) {
+  public async findUserByIdWithPassword(id: Types.ObjectId) {
     const user = await User.findById(id);
 
     return user;
   }
 
-
   public async editPasswordById(input: IUpdatePasswordInput) {
     const { userId, password } = input;
 
-     const hashedPassword = (await hashPassword(password)) as string;
+    const hashedPassword = (await hashPassword(password)) as string;
 
     const updatedMenu = await User.findOneAndUpdate(
       { _id: userId },
-      { $set: {password: hashedPassword} },
+      { $set: { password: hashedPassword } },
+      { new: true, runValidators: true }
+    );
+
+    return updatedMenu;
+  }
+
+  public async regeneratUserToken(apiToken: string, userId: Types.ObjectId) {
+    const updatedMenu = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { apiToken } },
       { new: true, runValidators: true }
     );
 

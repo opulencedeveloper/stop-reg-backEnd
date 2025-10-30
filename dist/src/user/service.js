@@ -35,7 +35,9 @@ class UserService {
     }
     findUserByIdWithoutPassword(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield entity_1.default.findById(id).select("-password");
+            const user = yield entity_1.default.findById(id)
+                .select("-password")
+                .populate("planId", "name monthlyPrice apiLimit durationInDays isRecommended");
             return user;
         });
     }
@@ -50,6 +52,12 @@ class UserService {
             const { userId, password } = input;
             const hashedPassword = (yield (0, auth_1.hashPassword)(password));
             const updatedMenu = yield entity_1.default.findOneAndUpdate({ _id: userId }, { $set: { password: hashedPassword } }, { new: true, runValidators: true });
+            return updatedMenu;
+        });
+    }
+    regeneratUserToken(apiToken, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const updatedMenu = yield entity_1.default.findOneAndUpdate({ _id: userId }, { $set: { apiToken } }, { new: true, runValidators: true });
             return updatedMenu;
         });
     }
