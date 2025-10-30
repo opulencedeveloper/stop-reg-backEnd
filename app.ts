@@ -13,6 +13,7 @@ import { utils } from "./src/utils";
 import { SubscriptionPlanRouter } from "./src/subscriptionPlan/router";
 import { UserRouter } from "./src/user/router";
 import { ManageDomainRouter } from "./src/manageDomain/router";
+import { EmailDomainRouter } from "./src/emailDomains/router";
 
 const app: Express = express();
 
@@ -70,6 +71,7 @@ const StartServer = () => {
   app.use("/api/v1/subscription", SubscriptionPlanRouter);
   app.use("/api/v1/user", UserRouter);
   app.use("/api/v1/manage/domain", ManageDomainRouter);
+  app.use("/api/v1/email-domains", EmailDomainRouter);
 
   app.get("/api/v1/healthcheck", (_req: Request, res: Response) => {
     res.status(200).json({ status: "UP 🔥🔧🎂" });

@@ -29,18 +29,25 @@ class Utils {
   public generateApiToken = (): string => {
     // Generate 24 random bytes (192 bits of entropy)
     const randomBytes = Crypto.randomBytes(24);
-    
+
     // Convert to base64 and remove padding characters
-    const base64 = randomBytes.toString('base64').replace(/[+/=]/g, (char) => {
-      const replacements: { [key: string]: string } = { 
-        '+': '-', 
-        '/': '_', 
-        '=': '' 
+    const base64 = randomBytes.toString("base64").replace(/[+/=]/g, (char) => {
+      const replacements: { [key: string]: string } = {
+        "+": "-",
+        "/": "_",
+        "=": "",
       };
       return replacements[char];
     });
-    
+
     return base64;
+  };
+
+  public normalizeDomain = (domain: string): string => {
+    return domain
+      .replace(/^https?:\/\//, "")
+      .replace(/\/.*/, "")
+      .toLowerCase();
   };
 }
 

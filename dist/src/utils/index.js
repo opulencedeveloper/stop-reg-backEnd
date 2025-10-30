@@ -11,15 +11,21 @@ class Utils {
             // Generate 24 random bytes (192 bits of entropy)
             const randomBytes = crypto_1.default.randomBytes(24);
             // Convert to base64 and remove padding characters
-            const base64 = randomBytes.toString('base64').replace(/[+/=]/g, (char) => {
+            const base64 = randomBytes.toString("base64").replace(/[+/=]/g, (char) => {
                 const replacements = {
-                    '+': '-',
-                    '/': '_',
-                    '=': ''
+                    "+": "-",
+                    "/": "_",
+                    "=": "",
                 };
                 return replacements[char];
             });
             return base64;
+        };
+        this.normalizeDomain = (domain) => {
+            return domain
+                .replace(/^https?:\/\//, "")
+                .replace(/\/.*/, "")
+                .toLowerCase();
         };
     }
     // Middleware function to wrap controllers with try-catch
