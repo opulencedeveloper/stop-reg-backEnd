@@ -15,3 +15,8 @@ export interface ILoginUserInput {
   email: string;
   password: string;
 }
+
+export interface IEmailVerifyInput {
+  email: string;
+  otp: string;
+}

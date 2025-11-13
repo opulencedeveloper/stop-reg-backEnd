@@ -10,6 +10,9 @@ export interface IUser extends Document {
   apiRequestLeft: number | null;
   email: string;
   password: string;
+  emailVerified: boolean;
+  emailVerificationOtp?: string;
+  emailVerificationOtpExpiration?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,19 +20,19 @@ export interface IUser extends Document {
 export interface IRegisterInput {
   planId: Types.ObjectId;
   tokenExpiresAt: Date;
-  apiRequestLeft: number | null; 
+  apiRequestLeft: number | null;
   apiToken: string;
   email: string;
   password: string;
+   emailVerificationOtp: string;
+  emailVerificationOtpExpiration: Date;
 }
 
-
 export interface IUpdatePasswordUserInput {
-   currentPassword: string;
+  currentPassword: string;
   password: string;
   confirmPassword: string;
 }
-
 
 export interface IUpdatePasswordInput {
   password: string;

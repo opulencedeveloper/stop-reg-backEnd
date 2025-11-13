@@ -49,6 +49,10 @@ class Utils {
       .replace(/\/.*/, "")
       .toLowerCase();
   };
+
+    public generateOtp = (): string => {
+    return Array.from({ length: 6 }, () => Crypto.randomInt(0, 10)).join("");
+  };
 }
 
 export const utils = new Utils();

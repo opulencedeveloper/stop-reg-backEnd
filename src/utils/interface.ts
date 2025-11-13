@@ -15,3 +15,24 @@ export interface CustomHttpResponse {
   description: string;
   data: any;
 }
+
+export interface ISendEmail {
+  receiverEmail: string;
+  subject: string;
+  emailTemplate: string;
+}
+
+export interface IOTP {
+  email: string;
+  otp: string;
+}
+
+export interface IValidateEmail {
+  email: string;
+}
+
+export interface IVerificationEmail extends IOTP {
+  expiryTime: string;
+}
+
+export type IVerifyEmail = IOTP;

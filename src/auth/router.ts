@@ -21,7 +21,13 @@ AuthRouter.post(
 );
 
 AuthRouter.post(
-  "/createplan",
-  [subscriptionPlanValidator.createSubscriptionPlan],
-  utils.wrapAsync(subscriptionPlanController.createSubscriptionPlan)
+  "/verfy/email",
+  [authValidator.verifyEmail],
+  utils.wrapAsync(authController.emailVerifyOtp)
 );
+
+// AuthRouter.post(
+//   "/createplan",
+//   [subscriptionPlanValidator.createSubscriptionPlan],
+//   utils.wrapAsync(subscriptionPlanController.createSubscriptionPlan)
+// );

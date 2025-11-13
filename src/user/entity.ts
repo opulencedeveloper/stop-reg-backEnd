@@ -39,6 +39,20 @@ const userSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+      emailVerified: {
+      type: Boolean,
+      default: false,
+      index: true, 
+    },
+    emailVerificationOtp: {
+      type: String,
+      trim: true,
+      default: undefined,
+    },
+    emailVerificationOtpExpiration: {
+      type: Date,
+      default: undefined,
+    },
   },
   {
     timestamps: true,
@@ -48,3 +62,9 @@ const userSchema: Schema = new Schema(
 const User = mongoose.model<IUser>("User", userSchema);
 
 export default User;
+
+//TODO
+
+//Change Ok to Mx Record
+//UNRESOLVABLE: To Public email provider
+//ERROR: to disposable

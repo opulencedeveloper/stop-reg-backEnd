@@ -62,6 +62,7 @@ class EmailDomainController {
                     data: null,
                 });
             }
+            //Null means thsi request is unlimited
             if (userExists.apiRequestLeft !== null) {
                 if (userExists.apiRequestLeft === 0) {
                     return utils_1.utils.customResponse({
@@ -107,6 +108,7 @@ class EmailDomainController {
                     data: null,
                 });
             }
+            //Null means thsi request is unlimited
             if (userExists.apiRequestLeft !== null) {
                 if (userExists.apiRequestLeft === 0) {
                     return utils_1.utils.customResponse({

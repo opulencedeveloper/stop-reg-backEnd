@@ -27,6 +27,9 @@ class Utils {
                 .replace(/\/.*/, "")
                 .toLowerCase();
         };
+        this.generateOtp = () => {
+            return Array.from({ length: 6 }, () => crypto_1.default.randomInt(0, 10)).join("");
+        };
     }
     // Middleware function to wrap controllers with try-catch
     wrapAsync(fn) {

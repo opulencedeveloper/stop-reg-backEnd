@@ -5,9 +5,12 @@ const express_1 = require("express");
 const controller_1 = require("./controller");
 const validator_1 = require("./validator");
 const utils_1 = require("../utils");
-const validator_2 = require("../subscriptionPlan/validator");
-const controller_2 = require("../subscriptionPlan/controller");
 exports.AuthRouter = (0, express_1.Router)();
 exports.AuthRouter.post("/register", [validator_1.authValidator.registerUser], utils_1.utils.wrapAsync(controller_1.authController.registerUser));
 exports.AuthRouter.post("/login", [validator_1.authValidator.logIn], utils_1.utils.wrapAsync(controller_1.authController.logIn));
-exports.AuthRouter.post("/createplan", [validator_2.subscriptionPlanValidator.createSubscriptionPlan], utils_1.utils.wrapAsync(controller_2.subscriptionPlanController.createSubscriptionPlan));
+exports.AuthRouter.post("/verfy/email", [validator_1.authValidator.verifyEmail], utils_1.utils.wrapAsync(controller_1.authController.emailVerifyOtp));
+// AuthRouter.post(
+//   "/createplan",
+//   [subscriptionPlanValidator.createSubscriptionPlan],
+//   utils.wrapAsync(subscriptionPlanController.createSubscriptionPlan)
+// );

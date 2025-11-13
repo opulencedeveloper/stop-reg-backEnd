@@ -6,6 +6,7 @@ var MessageResponse;
     MessageResponse["Error"] = "error";
     MessageResponse["Success"] = "success";
     MessageResponse["ResentOtp"] = "resent_otp";
+    MessageResponse["VerifyEmail"] = "verify_email";
 })(MessageResponse || (exports.MessageResponse = MessageResponse = {}));
 var ErrorName;
 (function (ErrorName) {

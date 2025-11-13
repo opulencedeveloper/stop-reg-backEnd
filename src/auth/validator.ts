@@ -3,7 +3,11 @@ import { Request, Response, NextFunction } from "express";
 
 import { MessageResponse } from "../utils/enum";
 import { utils } from "../utils";
-import { ILoginUserInput, IRegisterUserInput } from "./interface";
+import {
+  IEmailVerifyInput,
+  ILoginUserInput,
+  IRegisterUserInput,
+} from "./interface";
 
 class AuthValidator {
   public async registerUser(req: Request, res: Response, next: NextFunction) {
@@ -29,7 +33,6 @@ class AuthValidator {
           "any.required": "Confirm Password is required.",
           "any.only": "Passwords do not match",
         }),
-    
     });
 
     const { error } = schema.validate(req.body);
@@ -50,7 +53,7 @@ class AuthValidator {
   }
 
   public async logIn(req: Request, res: Response, next: NextFunction) {
-    const schema =Joi.object<ILoginUserInput>({
+    const schema = Joi.object<ILoginUserInput>({
       email: Joi.string().email().required().messages({
         "string.base": "Email must be text",
         "strig.email": "Invalid email format",
@@ -76,7 +79,31 @@ class AuthValidator {
     }
   }
 
-  
+  public async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    const schema = Joi.object<IEmailVerifyInput>({
+      email: Joi.string().email().required().messages({
+        "string.base": "Email must be text",
+        "strig.email": "Invalid email format",
+        "any.required": "Email is required.",
+      }),
+      otp: Joi.string().required().messages({
+        "any.required": "OTP is required.",
+      }),
+    });
+    const { error } = schema.validate(req.body);
+
+    if (!error) {
+      return next();
+    } else {
+      return utils.customResponse({
+        status: 400,
+        res,
+        message: MessageResponse.Error,
+        description: error.details[0].message,
+        data: null,
+      });
+    }
+  }
 }
 
 export const authValidator = new AuthValidator();

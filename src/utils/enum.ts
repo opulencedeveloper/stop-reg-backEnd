@@ -1,7 +1,8 @@
 export enum MessageResponse {
   Error = "error",
   Success = "success",
-  ResentOtp= "resent_otp"
+  ResentOtp= "resent_otp",
+   VerifyEmail = "verify_email",
 }
 
 export enum ErrorName {

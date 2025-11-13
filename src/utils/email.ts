@@ -1,31 +1,22 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var _a;
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendEmailVerificationMail = exports.sendEmail = void 0;
-const nodemailer_1 = __importDefault(require("nodemailer"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+import { ISendEmail, IVerificationEmail } from "./interface";
+
+dotenv.config();
+
 const smtpSender = process.env.EMAILSENDER;
 const smtpPassword = process.env.EMAILSENDERPASSWORD;
 const smtpEmailFrom = process.env.EMAILFROM;
 const clientUrl = process.env.CLIENT_URL;
-const adminEmail = (_a = process.env.ADMIN_EMAIL) !== null && _a !== void 0 ? _a : "";
+const adminEmail = process.env.ADMIN_EMAIL ?? "";
 const baseUrl = process.env.FRONTEND_URL;
 const logoUrl = `${baseUrl}/assets/logo/stopreg-logo.svg`;
+
+
 // export const sendEmail = async (input: ISendEmail) => {
 //   const { receiverEmail, subject, emailTemplate } = input;
+
 //   var transport = nodemailer.createTransport({
 //       host: emailHost,
 //       port: 587,
@@ -34,12 +25,14 @@ const logoUrl = `${baseUrl}/assets/logo/stopreg-logo.svg`;
 //       pass: emailSenderPassword
 //       }
 //   });
+
 //   var mailOptions = {
 //       from: `Exquisite Investment <${emailFrom}>`,
 //       to: receiverEmail,
 //       subject,
 //       html: emailTemplate ,
 //   };
+
 //   transport.sendMail(mailOptions, (error: any, info:any) => {
 //       if (error) {
 //       return console.log(error);
@@ -47,109 +40,121 @@ const logoUrl = `${baseUrl}/assets/logo/stopreg-logo.svg`;
 //       console.log('Successfully sent');
 //   });
 // };
-const sendEmail = (input) => __awaiter(void 0, void 0, void 0, function* () {
-    const mailOptions = {
-        from: `"StopReg Team" <${smtpEmailFrom}>`,
-        to: input.receiverEmail,
-        replyTo: smtpEmailFrom,
-        subject: input.subject,
-        html: input.emailTemplate,
-    };
-    const tryPort587 = () => __awaiter(void 0, void 0, void 0, function* () {
-        const transport = nodemailer_1.default.createTransport({
-            host: "smtp.zeptomail.com",
-            port: 587,
-            auth: {
-                user: smtpSender,
-                pass: smtpPassword,
-            },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-        });
-        return yield transport.sendMail(mailOptions);
+
+export const sendEmail = async (input: ISendEmail) => {
+  const mailOptions = {
+    from: `"StopReg Team" <${smtpEmailFrom}>`,
+    to: input.receiverEmail,
+    replyTo: smtpEmailFrom,
+    subject: input.subject,
+    html: input.emailTemplate,
+  };
+
+  const tryPort587 = async () => {
+    const transport = nodemailer.createTransport({
+      host: "smtp.zeptomail.com",
+      port: 587,
+      auth: {
+        user: smtpSender,
+        pass: smtpPassword,
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
     });
-    const tryPort465 = () => __awaiter(void 0, void 0, void 0, function* () {
-        const transport = nodemailer_1.default.createTransport({
-            host: "smtp.zeptomail.com",
-            port: 465,
-            secure: true,
-            auth: {
-                user: smtpSender,
-                pass: smtpPassword,
-            },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-        });
-        return yield transport.sendMail(mailOptions);
+    return await transport.sendMail(mailOptions);
+  };
+
+  const tryPort465 = async () => {
+    const transport = nodemailer.createTransport({
+      host: "smtp.zeptomail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: smtpSender,
+        pass: smtpPassword,
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
     });
-    try {
-        const info = yield tryPort587();
-        console.log("Email successfully sent via port 587:", info.messageId);
+    return await transport.sendMail(mailOptions);
+  };
+
+  try {
+    const info = await tryPort587();
+    console.log("Email successfully sent via port 587:", info.messageId);
+    return info;
+  } catch (error587: any) {
+    if (
+      error587.code === "ETIMEDOUT" ||
+      error587.code === "ECONNREFUSED" ||
+      error587.code === "ESOCKET"
+    ) {
+      try {
+        console.log("Port 587 failed, trying port 465 (SSL)...");
+        const info = await tryPort465();
+        console.log("Email successfully sent via port 465:", info.messageId);
         return info;
+      } catch (error465) {
+        console.error("Both ports failed. Port 587 error:", error587);
+        console.error("Port 465 error:", error465);
+        throw error465;
+      }
     }
-    catch (error587) {
-        if (error587.code === "ETIMEDOUT" ||
-            error587.code === "ECONNREFUSED" ||
-            error587.code === "ESOCKET") {
-            try {
-                console.log("Port 587 failed, trying port 465 (SSL)...");
-                const info = yield tryPort465();
-                console.log("Email successfully sent via port 465:", info.messageId);
-                return info;
-            }
-            catch (error465) {
-                console.error("Both ports failed. Port 587 error:", error587);
-                console.error("Port 465 error:", error465);
-                throw error465;
-            }
-        }
-        console.error("Error sending email via port 587:", error587);
-        throw error587;
-    }
-});
-exports.sendEmail = sendEmail;
-// try {
-//   // const transporter = nodemailer.createTransport({
-//   //   host: 'smtp-relay.sendinblue.com',
-//   //   port: 587,
-//   //   secure: false,
-//   //   auth: {
-//   //     user: smtpSender,
-//   //     pass: smtpPassword,
-//   //   },
-//   // });
-//   // const mailOptions = {
-//   //   from: `Kingsway <${smtpEmailFrom}>`,
-//   //   to: input.receiverEmail,
-//   //   subject: input.subject,
-//   //   html: input.emailTemplate,
-//   // };
-//   const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//       user: smtpSender,
-//       pass: smtpPassword,
-//     },
-//   });
-//   const mailOptions = {
-//     from: `Kingsway <${smtpEmailFrom}>`,
-//     to: input.receiverEmail,
-//     subject: input.subject,
-//     html: input.emailTemplate,
-//   };
-//   const info = await transporter.sendMail(mailOptions);
-//   return info.response;
-// } catch (error) {
-//   console.error("Email sending error:", error);
-//   // throw error;
-// }
-const sendEmailVerificationMail = (input) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, otp, expiryTime } = input;
-    const verificationLink = `${baseUrl}/email-verified?email=${encodeURIComponent(email)}&token=${encodeURIComponent(otp)}`;
-    return (0, exports.sendEmail)({
-        receiverEmail: email,
-        subject: "Welcome to StopReg - Verify Your Email",
-        emailTemplate: `<!DOCTYPE html>
+    console.error("Error sending email via port 587:", error587);
+    throw error587;
+  }
+};
+  // try {
+  //   // const transporter = nodemailer.createTransport({
+  //   //   host: 'smtp-relay.sendinblue.com',
+  //   //   port: 587,
+  //   //   secure: false,
+  //   //   auth: {
+  //   //     user: smtpSender,
+  //   //     pass: smtpPassword,
+  //   //   },
+  //   // });
+
+  //   // const mailOptions = {
+  //   //   from: `Kingsway <${smtpEmailFrom}>`,
+  //   //   to: input.receiverEmail,
+  //   //   subject: input.subject,
+  //   //   html: input.emailTemplate,
+  //   // };
+
+  //   const transporter = nodemailer.createTransport({
+  //     service: "gmail",
+  //     auth: {
+  //       user: smtpSender,
+  //       pass: smtpPassword,
+  //     },
+  //   });
+
+  //   const mailOptions = {
+  //     from: `Kingsway <${smtpEmailFrom}>`,
+  //     to: input.receiverEmail,
+  //     subject: input.subject,
+  //     html: input.emailTemplate,
+  //   };
+
+  //   const info = await transporter.sendMail(mailOptions);
+  //   return info.response;
+  // } catch (error) {
+  //   console.error("Email sending error:", error);
+  //   // throw error;
+  // }
+
+export const sendEmailVerificationMail = async (input: IVerificationEmail) => {
+  const { email, otp, expiryTime } = input;
+
+  const verificationLink = `${baseUrl}/email-verified?email=${encodeURIComponent(
+    email
+  )}&token=${encodeURIComponent(otp)}`;
+
+  return sendEmail({
+    receiverEmail: email,
+    subject: "Welcome to StopReg - Verify Your Email",
+    emailTemplate: `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -421,6 +426,5 @@ const sendEmailVerificationMail = (input) => __awaiter(void 0, void 0, void 0, f
   </div>
 </body>
 </html>`,
-    });
-});
-exports.sendEmailVerificationMail = sendEmailVerificationMail;
+  });
+};

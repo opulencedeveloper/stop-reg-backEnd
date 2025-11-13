@@ -17,10 +17,12 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const auth_1 = require("../utils/auth");
 const enum_1 = require("../utils/enum");
-const service_1 = require("../user/service");
 const utils_1 = require("../utils");
-const service_2 = require("../subscriptionPlan/service");
+const service_1 = require("../subscriptionPlan/service");
 const enum_2 = require("../subscriptionPlan/enum");
+const service_2 = require("../user/service");
+const email_1 = require("../utils/email");
+const service_3 = require("./service");
 dotenv_1.default.config();
 const jwtSecret = process.env.JWT_SECRET;
 class AuthController {
@@ -28,7 +30,7 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             const body = req.body;
             const email = body.email;
-            const emailExists = yield service_1.userService.findUserByEmail(email);
+            const emailExists = yield service_2.userService.findUserByEmail(email);
             if (emailExists) {
                 return utils_1.utils.customResponse({
                     status: 404,
@@ -38,7 +40,7 @@ class AuthController {
                     data: null,
                 });
             }
-            const plan = yield service_2.subscriptionPlanService.findPlanByName(enum_2.SubPlan.Free);
+            const plan = yield service_1.subscriptionPlanService.findPlanByName(enum_2.SubPlan.Free);
             console.log(plan);
             if (!plan) {
                 return utils_1.utils.customResponse({
@@ -53,9 +55,16 @@ class AuthController {
             tokenExpiresAt.setDate(tokenExpiresAt.getDate() + plan.durationInDays);
             const apiToken = utils_1.utils.generateApiToken();
             const apiRequestLeft = plan.apiLimit;
-            yield service_1.userService.createUser(Object.assign(Object.assign({}, body), { planId: plan._id, tokenExpiresAt,
+            const otp = utils_1.utils.generateOtp();
+            const expiryTime = new Date(Date.now() + 5 * 60 * 1000);
+            yield service_2.userService.createUser(Object.assign(Object.assign({}, body), { planId: plan._id, tokenExpiresAt,
                 apiRequestLeft,
-                apiToken }));
+                apiToken, emailVerificationOtp: otp, emailVerificationOtpExpiration: expiryTime }));
+            (0, email_1.sendEmailVerificationMail)({
+                email: body.email,
+                otp: otp,
+                expiryTime: "5 minutes",
+            });
             return utils_1.utils.customResponse({
                 status: 201,
                 res,
@@ -68,13 +77,31 @@ class AuthController {
     logIn(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { password, email } = req.body;
-            const userExists = yield service_1.userService.findUserByEmail(email);
+            const userExists = yield service_2.userService.findUserByEmail(email);
             if (!userExists) {
                 return utils_1.utils.customResponse({
                     status: 400,
                     res,
                     message: enum_1.MessageResponse.Error,
                     description: "Wrong user credentials!",
+                    data: null,
+                });
+            }
+            const isEmailVerified = yield service_3.authService.checkEmailVerificationStatus(email);
+            if (!isEmailVerified) {
+                const otp = utils_1.utils.generateOtp();
+                const email = userExists.email;
+                yield service_3.authService.saveOtp({ email, otp });
+                yield (0, email_1.sendEmailVerificationMail)({
+                    email,
+                    otp,
+                    expiryTime: "5 minutes",
+                });
+                return utils_1.utils.customResponse({
+                    status: 200,
+                    res,
+                    message: enum_1.MessageResponse.VerifyEmail,
+                    description: `A  verication otp  has been sent to ${email}!`,
                     data: null,
                 });
             }
@@ -100,6 +127,71 @@ class AuthController {
                     token,
                 },
             });
+        });
+    }
+    emailVerifyOtp(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const body = req.body;
+            const email = body.email;
+            const otp = body.otp;
+            const userOtpValidity = yield service_3.authService.validateOtp(email, otp);
+            if (!userOtpValidity) {
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Success,
+                    description: "Invalid otp",
+                    data: null,
+                });
+            }
+            if (userOtpValidity.emailVerified) {
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Success,
+                    description: "Email already verified!",
+                    data: null,
+                });
+            }
+            if (userOtpValidity.emailVerificationOtpExpiration !== undefined) {
+                const currentDate = new Date();
+                const expirationDate = new Date(userOtpValidity.emailVerificationOtpExpiration);
+                if (expirationDate < currentDate) {
+                    return utils_1.utils.customResponse({
+                        status: 400,
+                        res,
+                        message: enum_1.MessageResponse.Error,
+                        description: "Email verification OTP has expired!",
+                        data: null,
+                    });
+                }
+                const userExists = yield service_3.authService.verifyEmail(email);
+                if (!userExists) {
+                    return utils_1.utils.customResponse({
+                        status: 404,
+                        res,
+                        message: enum_1.MessageResponse.Error,
+                        description: "User not found!",
+                        data: null,
+                    });
+                }
+                return utils_1.utils.customResponse({
+                    status: 200,
+                    res,
+                    message: enum_1.MessageResponse.Success,
+                    description: "Verification successful",
+                    data: null,
+                });
+            }
+            else {
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "Email verification OTP expired",
+                    data: null,
+                });
+            }
         });
     }
 }
