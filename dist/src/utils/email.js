@@ -145,7 +145,7 @@ exports.sendEmail = sendEmail;
 // }
 const sendEmailVerificationMail = (input) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, otp, expiryTime } = input;
-    const verificationLink = `${baseUrl}/email-verified?email=${encodeURIComponent(email)}&token=${encodeURIComponent(otp)}`;
+    const verificationLink = `${baseUrl}/?email=${encodeURIComponent(email)}&token=${encodeURIComponent(otp)}`;
     return (0, exports.sendEmail)({
         receiverEmail: email,
         subject: "Welcome to StopReg - Verify Your Email",

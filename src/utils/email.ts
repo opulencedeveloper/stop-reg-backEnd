@@ -147,7 +147,7 @@ export const sendEmail = async (input: ISendEmail) => {
 export const sendEmailVerificationMail = async (input: IVerificationEmail) => {
   const { email, otp, expiryTime } = input;
 
-  const verificationLink = `${baseUrl}/email-verified?email=${encodeURIComponent(
+  const verificationLink = `${baseUrl}/?email=${encodeURIComponent(
     email
   )}&token=${encodeURIComponent(otp)}`;
 
