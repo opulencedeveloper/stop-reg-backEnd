@@ -104,6 +104,29 @@ class AuthValidator {
       });
     }
   }
+
+    public async validateEmail(req: Request, res: Response, next: NextFunction) {
+    const schema = Joi.object<IEmailVerifyInput>({
+      email: Joi.string().email().required().messages({
+        "string.base": "Email must be text",
+        "strig.email": "Invalid email format",
+        "any.required": "Email is required.",
+      }),
+    });
+    const { error } = schema.validate(req.body);
+
+    if (!error) {
+      return next();
+    } else {
+      return utils.customResponse({
+        status: 400,
+        res,
+        message: MessageResponse.Error,
+        description: error.details[0].message,
+        data: null,
+      });
+    }
+  }
 }
 
 export const authValidator = new AuthValidator();

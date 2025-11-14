@@ -194,5 +194,35 @@ class AuthController {
             }
         });
     }
+    resendOtp(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const body = req.body;
+            const userExists = yield service_2.userService.findUserByEmail(body.email);
+            if (!userExists) {
+                return utils_1.utils.customResponse({
+                    status: 404,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "User not found!",
+                    data: null,
+                });
+            }
+            const otp = utils_1.utils.generateOtp();
+            const email = userExists.email;
+            yield service_3.authService.saveOtp({ email, otp });
+            yield (0, email_1.sendEmailVerificationMail)({
+                email,
+                otp,
+                expiryTime: "5 minutes",
+            });
+            return utils_1.utils.customResponse({
+                status: 200,
+                res,
+                message: enum_1.MessageResponse.VerifyEmail,
+                description: `A  verication otp  has been resent to ${email}!`,
+                data: null,
+            });
+        });
+    }
 }
 exports.authController = new AuthController();

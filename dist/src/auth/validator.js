@@ -112,5 +112,29 @@ class AuthValidator {
             }
         });
     }
+    validateEmail(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const schema = joi_1.default.object({
+                email: joi_1.default.string().email().required().messages({
+                    "string.base": "Email must be text",
+                    "strig.email": "Invalid email format",
+                    "any.required": "Email is required.",
+                }),
+            });
+            const { error } = schema.validate(req.body);
+            if (!error) {
+                return next();
+            }
+            else {
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: error.details[0].message,
+                    data: null,
+                });
+            }
+        });
+    }
 }
 exports.authValidator = new AuthValidator();

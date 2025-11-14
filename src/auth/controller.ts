@@ -11,7 +11,7 @@ import { subscriptionPlanService } from "../subscriptionPlan/service";
 import { SubPlan } from "../subscriptionPlan/enum";
 import { userService } from "../user/service";
 import { sendEmailVerificationMail } from "../utils/email";
-import { IVerifyEmail } from "../utils/interface";
+import { IResendOTP, IVerifyEmail } from "../utils/interface";
 import { authService } from "./service";
 
 dotenv.config();
@@ -99,7 +99,7 @@ class AuthController {
       });
     }
 
-       const isEmailVerified = await authService.checkEmailVerificationStatus(
+    const isEmailVerified = await authService.checkEmailVerificationStatus(
       email
     );
 
@@ -108,10 +108,9 @@ class AuthController {
 
       const email = userExists.email;
 
-
       await authService.saveOtp({ email, otp });
 
-      await sendEmailVerificationMail({  
+      await sendEmailVerificationMail({
         email,
         otp,
         expiryTime: "5 minutes",
@@ -172,7 +171,7 @@ class AuthController {
     }
 
     if (userOtpValidity.emailVerified) {
-        return utils.customResponse({
+      return utils.customResponse({
         status: 400,
         res,
         message: MessageResponse.Success,
@@ -226,6 +225,42 @@ class AuthController {
         data: null,
       });
     }
+  }
+
+  public async resendOtp(req: Request, res: Response) {
+    const body: IResendOTP = req.body;
+
+    const userExists = await userService.findUserByEmail(body.email);
+
+    if (!userExists) {
+      return utils.customResponse({
+        status: 404,
+        res,
+        message: MessageResponse.Error,
+        description: "User not found!",
+        data: null,
+      });
+    }
+
+    const otp = utils.generateOtp();
+
+    const email = userExists.email;
+
+    await authService.saveOtp({ email, otp });
+
+    await sendEmailVerificationMail({
+      email,
+      otp,
+      expiryTime: "5 minutes",
+    });
+
+    return utils.customResponse({
+      status: 200,
+      res,
+      message: MessageResponse.VerifyEmail,
+      description: `A  verication otp  has been resent to ${email}!`,
+      data: null,
+    });
   }
 }
 

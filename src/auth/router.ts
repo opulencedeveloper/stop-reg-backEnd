@@ -26,6 +26,12 @@ AuthRouter.post(
   utils.wrapAsync(authController.emailVerifyOtp)
 );
 
+AuthRouter.post(
+  "/resend/email",
+  [authValidator.validateEmail],
+  utils.wrapAsync(authController.resendOtp)
+);
+
 // AuthRouter.post(
 //   "/createplan",
 //   [subscriptionPlanValidator.createSubscriptionPlan],

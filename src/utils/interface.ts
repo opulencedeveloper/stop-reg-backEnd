@@ -27,6 +27,10 @@ export interface IOTP {
   otp: string;
 }
 
+export interface IResendOTP {
+  email: string;
+}
+
 export interface IValidateEmail {
   email: string;
 }
