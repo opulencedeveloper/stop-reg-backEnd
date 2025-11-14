@@ -28,7 +28,7 @@ class AuthController {
 
     if (emailExists) {
       return utils.customResponse({
-        status: 404,
+        status: 409,
         res,
         message: MessageResponse.Error,
         description: "Email already exist!",

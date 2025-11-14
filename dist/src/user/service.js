@@ -68,16 +68,16 @@ class UserService {
             return updatedMenu;
         });
     }
-    decrementApiRequestLeft(userId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const updatedUser = yield entity_1.default.findOneAndUpdate({ _id: userId, apiRequestLeft: { $gt: 0 } }, { $inc: { apiRequestLeft: -1 } }, { new: true, projection: { _id: 1, apiRequestLeft: 1 } }).lean();
+    decrementApiRequestLeft(userId_1) {
+        return __awaiter(this, arguments, void 0, function* (userId, amount = 1) {
+            const updatedUser = yield entity_1.default.findOneAndUpdate({ _id: userId, apiRequestLeft: { $gt: 0 } }, { $inc: { apiRequestLeft: -amount } }, { new: true, projection: { _id: 1, apiRequestLeft: 1 } }).lean();
             return updatedUser;
         });
     }
     findUserForRateLimit(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             return entity_1.default.findById(userId)
-                .select("_id tokenExpiresAt apiRequestLeft")
+                .select("_id tokenExpiresAt apiRequestLeft planId")
                 .lean();
         });
     }

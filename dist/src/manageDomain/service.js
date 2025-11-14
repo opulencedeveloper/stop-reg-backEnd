@@ -22,10 +22,20 @@ class ManageDomainService {
             return savedManagedDomain;
         });
     }
-    findDomainByName(domain) {
+    findDomainByNameAndUserId(domain, userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield entity_1.default.findOne({
+                _id: userId,
                 domain,
+            });
+            return user;
+        });
+    }
+    deleteDomainByIdAndUserId(domainId, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield entity_1.default.findOneAndDelete({
+                _id: domainId,
+                userId
             });
             return user;
         });

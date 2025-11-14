@@ -35,11 +35,22 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const emailDomainSchema = new mongoose_1.Schema({
-    disposable_domain: {
+    bot_username: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    bot_password: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    domain: {
         type: String,
         required: true,
         lowercase: true,
         trim: true,
+        unique: true,
     },
     mx_record: {
         type: String,
@@ -52,16 +63,10 @@ const emailDomainSchema = new mongoose_1.Schema({
         required: true,
         default: false,
     },
-    relay_domain: {
-        type: Boolean,
-        required: true,
-        default: false,
-    },
 }, {
     timestamps: true,
 });
-emailDomainSchema.index({ disposable_domain: 1 }, { unique: true });
+// Indexes
 emailDomainSchema.index({ public_email_provider: 1 });
-emailDomainSchema.index({ relay_domain: 1 });
 const EmailDomain = mongoose_1.default.model("EmailDomain", emailDomainSchema);
 exports.default = EmailDomain;

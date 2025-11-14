@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { Types } from "mongoose";
 
 import { comparePassword } from "../utils/auth";
 import { MessageResponse } from "../utils/enum";
@@ -29,8 +30,9 @@ class ManageDomainController {
       });
     }
 
-    const domainExists = await manageDomainService.findDomainByName(
-      body.domain
+    const domainExists = await manageDomainService.findDomainByNameAndUserId(
+      body.domain,
+      userId!
     );
 
     if (domainExists) {
@@ -70,6 +72,26 @@ class ManageDomainController {
       message: MessageResponse.Success,
       description: "Domains fetched successfully!",
       data: manageDomains,
+    });
+  }
+
+  public async deleteDomain(req: Request, res: Response) {
+    const { domainId } = req.query;
+    const domainIdObjectId = new Types.ObjectId(domainId as string);
+
+    const { userId } = req as CustomRequest;
+
+    await manageDomainService.deleteDomainByIdAndUserId(
+      domainIdObjectId,
+      userId!
+    );
+
+    return utils.customResponse({
+      status: 200,
+      res,
+      message: MessageResponse.Success,
+      description: "Domain deleted successfully!",
+      data: null,
     });
   }
 }

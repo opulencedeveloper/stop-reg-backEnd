@@ -12,3 +12,10 @@ export interface IRequest extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface ISetRequestStatusInput {
+  userId: Types.ObjectId;
+  success: number;
+  blocked: number;
+  planId: Types.ObjectId;
+}

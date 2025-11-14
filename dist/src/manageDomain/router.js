@@ -9,3 +9,4 @@ const validator_1 = require("./validator");
 exports.ManageDomainRouter = (0, express_1.Router)();
 exports.ManageDomainRouter.post("/add", [is_auth_1.isAuth, validator_1.manageDomainValidator.addDomain], utils_1.utils.wrapAsync(controller_1.manageDomainController.addDomain));
 exports.ManageDomainRouter.get("/fetch", [is_auth_1.isAuth], utils_1.utils.wrapAsync(controller_1.manageDomainController.fetchUserDomains));
+exports.ManageDomainRouter.delete("/delete", [is_auth_1.isAuth, validator_1.manageDomainValidator.validateDomainId], utils_1.utils.wrapAsync(controller_1.manageDomainController.deleteDomain));

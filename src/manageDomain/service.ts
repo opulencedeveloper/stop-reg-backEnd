@@ -13,9 +13,19 @@ class ManageDomainService {
     return savedManagedDomain;
   }
 
-  public async findDomainByName(domain: string) {
+  public async findDomainByNameAndUserId(domain: string, userId: Types.ObjectId) {
     const user = await ManageDomain.findOne({
+      _id: userId,
       domain,
+    });
+
+    return user;
+  }
+
+    public async deleteDomainByIdAndUserId(domainId: Types.ObjectId, userId: Types.ObjectId) {
+    const user = await ManageDomain.findOneAndDelete({
+      _id: domainId,
+      userId
     });
 
     return user;

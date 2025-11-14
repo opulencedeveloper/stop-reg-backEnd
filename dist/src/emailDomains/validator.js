@@ -20,13 +20,21 @@ class EmailDomainValidator {
     addEmailDomain(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const schema = joi_1.default.object({
-                disposable_domain: joi_1.default.string()
+                bot_username: joi_1.default.string().trim().required().messages({
+                    "any.required": "Bot username is required.",
+                    "string.empty": "Bot username cannot be empty.",
+                }),
+                bot_password: joi_1.default.string().trim().required().messages({
+                    "any.required": "Bot password is required.",
+                    "string.empty": "Bot password cannot be empty.",
+                }),
+                domain: joi_1.default.string()
                     .trim()
                     .pattern(/^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/)
                     .required()
                     .messages({
-                    "any.required": "Disposable domain is required.",
-                    "string.empty": "Disposable domain cannot be empty.",
+                    "any.required": "Domain is required.",
+                    "string.empty": "Domain cannot be empty.",
                     "string.pattern.base": "Invalid domain format. Example: sample.com or mail.sample.org",
                 }),
                 mx_record: joi_1.default.string().trim().required().messages({
@@ -36,10 +44,6 @@ class EmailDomainValidator {
                 public_email_provider: joi_1.default.boolean().required().messages({
                     "any.required": "Public email provider field is required.",
                     "boolean.base": "Public email provider must be true or false.",
-                }),
-                relay_domain: joi_1.default.boolean().required().messages({
-                    "any.required": "Relay domain field is required.",
-                    "boolean.base": "Relay domain must be true or false.",
                 }),
             });
             const { error } = schema.validate(req.body, { abortEarly: true });

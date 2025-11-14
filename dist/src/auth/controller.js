@@ -33,7 +33,7 @@ class AuthController {
             const emailExists = yield service_2.userService.findUserByEmail(email);
             if (emailExists) {
                 return utils_1.utils.customResponse({
-                    status: 404,
+                    status: 409,
                     res,
                     message: enum_1.MessageResponse.Error,
                     description: "Email already exist!",

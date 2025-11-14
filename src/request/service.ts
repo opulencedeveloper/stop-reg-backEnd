@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import Request from "./entity";
-import { RequestType } from "./enum";
+import { ISetRequestStatusInput } from "./interface";
 
 class RequestService {
   public async findRequestByUserId(userId: Types.ObjectId) {
@@ -8,28 +8,31 @@ class RequestService {
     return Request.find({ userId, year: currentYear }).sort({ month: 1 });
   }
 
-  public async findRequestByUserIdAndSetStatus(
-    userId: Types.ObjectId,
-    type: RequestType,
-    planId: Types.ObjectId
-  ) {
+  public async findRequestByUserIdAndSetStatus(input: ISetRequestStatusInput) {
+    const { userId, success, blocked, planId } = input;
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
-    const inc: Record<string, number> = { total: 1 };
-    if (type === RequestType.Success) inc.success = 1;
-    else if (type === RequestType.Blocked) inc.blocked = 1;
+    const inc: Record<string, number> = {};
+    if (success > 0) inc.success = success;
+    if (blocked > 0) inc.blocked = blocked;
 
     const result = await Request.findOneAndUpdate(
       { userId, month, year },
       {
         $inc: inc,
         $set: { planId }, 
-        $setOnInsert: { userId, month, year, success: 0, blocked: 0, total: 0 },
+        $setOnInsert: { userId, month, year },
       },
       { upsert: true, new: true, runValidators: true }
     );
+
+    // Update total to ensure it equals success + blocked
+    if (result) {
+      result.total = result.success + result.blocked;
+      await result.save();
+    }
 
     return result;
   }

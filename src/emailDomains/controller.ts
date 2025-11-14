@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 import { MessageResponse } from "../utils/enum";
 
 import { utils } from "../utils";
@@ -11,20 +12,22 @@ import { emailDomainService } from "./service";
 import { CustomRequest } from "../utils/interface";
 import { userService } from "../user/service";
 import { ISubscriptionPlan } from "../subscriptionPlan/interface";
+import { manageDomainService } from "../manageDomain/service";
+import { requestService } from "../request/service";
 
 class EmailDomainController {
   public async addEmailDomain(req: Request, res: Response) {
     const body: IAddEmailDomainUserInput = req.body;
     const { userId } = req as CustomRequest;
 
-    const userExists = await userService.findUserForRateLimit(userId!);
+    const domainExist = await emailDomainService.checkIfDomainExist(body.domain);
 
-    if (!userExists) {
+    if (domainExist) {
       return utils.customResponse({
-        status: 404,
+        status: 409,
         res,
         message: MessageResponse.Error,
-        description: "User not found!",
+        description: "Domain already added!",
         data: null,
       });
     }
@@ -66,7 +69,7 @@ class EmailDomainController {
       });
     }
 
-    //Null means thsi request is unlimited
+    // Null means this request is unlimited
     if (userExists.apiRequestLeft !== null) {
       if (userExists.apiRequestLeft === 0) {
         return utils.customResponse({
@@ -84,6 +87,13 @@ class EmailDomainController {
     const disposableEmail = await emailDomainService.checkDisposableEmail(
       body.email
     );
+
+    await requestService.findRequestByUserIdAndSetStatus({
+      planId: userExists.planId as Types.ObjectId,
+      blocked: disposableEmail ? 0 : 1,
+      success: disposableEmail ? 1 : 0,
+      userId: userExists._id,
+    });
 
     return utils.customResponse({
       status: 200,
@@ -120,7 +130,7 @@ class EmailDomainController {
       });
     }
 
-     //Null means thsi request is unlimited
+    // Null means this request is unlimited
     if (userExists.apiRequestLeft !== null) {
       if (userExists.apiRequestLeft === 0) {
         return utils.customResponse({
@@ -132,12 +142,33 @@ class EmailDomainController {
         });
       }
 
-      await userService.decrementApiRequestLeft(userId!);
+      if (userExists.apiRequestLeft < body.domains.length) {
+        return utils.customResponse({
+          status: 403,
+          res,
+          message: MessageResponse.Error,
+          description: `Insufficient API requests. You have ${userExists.apiRequestLeft} request(s) remaining, but need ${body.domains.length} for this operation.`,
+          data: null,
+        });
+      }
+
+      await userService.decrementApiRequestLeft(userId!, body.domains.length);
     }
 
     const bulkVerification = await emailDomainService.verifyBulkDomains(
       body.domains
     );
+
+    // Calculate success and blocked counts
+    const successCount = bulkVerification.length; // Domains found in DB = successful
+    const blockedCount = body.domains.length - successCount; // Domains not found = blocked
+
+    await requestService.findRequestByUserIdAndSetStatus({
+      planId: userExists.planId as Types.ObjectId,
+      success: successCount,
+      blocked: blockedCount,
+      userId: userExists._id,
+    });
 
     return utils.customResponse({
       status: 200,

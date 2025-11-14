@@ -18,3 +18,9 @@ ManageDomainRouter.get(
   [isAuth],
   utils.wrapAsync(manageDomainController.fetchUserDomains)
 );
+
+ManageDomainRouter.delete(
+  "/delete",
+  [isAuth, manageDomainValidator.validateDomainId],
+  utils.wrapAsync(manageDomainController.deleteDomain)
+);

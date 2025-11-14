@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.manageDomainController = void 0;
+const mongoose_1 = require("mongoose");
 const enum_1 = require("../utils/enum");
 const utils_1 = require("../utils");
 const service_1 = require("./service");
@@ -29,7 +30,7 @@ class ManageDomainController {
                     data: null,
                 });
             }
-            const domainExists = yield service_1.manageDomainService.findDomainByName(body.domain);
+            const domainExists = yield service_1.manageDomainService.findDomainByNameAndUserId(body.domain, userId);
             if (domainExists) {
                 return utils_1.utils.customResponse({
                     status: 404,
@@ -59,6 +60,21 @@ class ManageDomainController {
                 message: enum_1.MessageResponse.Success,
                 description: "Domains fetched successfully!",
                 data: manageDomains,
+            });
+        });
+    }
+    deleteDomain(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { domainId } = req.query;
+            const domainIdObjectId = new mongoose_1.Types.ObjectId(domainId);
+            const { userId } = req;
+            yield service_1.manageDomainService.deleteDomainByIdAndUserId(domainIdObjectId, userId);
+            return utils_1.utils.customResponse({
+                status: 200,
+                res,
+                message: enum_1.MessageResponse.Success,
+                description: "Domain deleted successfully!",
+                data: null,
             });
         });
     }

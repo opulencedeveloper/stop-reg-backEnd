@@ -23,10 +23,18 @@ class EmailDomainService {
             return savedEmailDomain;
         });
     }
+    checkIfDomainExist(domain) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const emailDomain = new entity_1.default({
+                domain
+            });
+            return emailDomain;
+        });
+    }
     checkDisposableEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
             const domain = email.split("@")[1].toLowerCase();
-            const disposableEmail = yield entity_1.default.findOne({ disposable_domain: domain });
+            const disposableEmail = yield entity_1.default.findOne({ domain }).select("-bot_username -bot_password");
             return disposableEmail;
         });
     }
@@ -34,7 +42,7 @@ class EmailDomainService {
         return __awaiter(this, void 0, void 0, function* () {
             const cleanedDomains = domains.map(utils_1.utils.normalizeDomain);
             const results = yield entity_1.default.find({
-                disposable_domain: { $in: cleanedDomains },
+                domain: { $in: cleanedDomains },
             });
             return results;
         });

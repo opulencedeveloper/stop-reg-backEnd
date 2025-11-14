@@ -74,10 +74,13 @@ class UserService {
     return updatedMenu;
   }
 
-  public async decrementApiRequestLeft(userId: Types.ObjectId) {
+  public async decrementApiRequestLeft(
+    userId: Types.ObjectId,
+    amount: number = 1
+  ) {
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId, apiRequestLeft: { $gt: 0 } },
-      { $inc: { apiRequestLeft: -1 } },
+      { $inc: { apiRequestLeft: -amount } },
       { new: true, projection: { _id: 1, apiRequestLeft: 1 } }
     ).lean();
 
@@ -86,7 +89,7 @@ class UserService {
 
   public async findUserForRateLimit(userId: Types.ObjectId) {
     return User.findById(userId)
-      .select("_id tokenExpiresAt apiRequestLeft")
+      .select("_id tokenExpiresAt apiRequestLeft planId")
       .lean();
   }
 }

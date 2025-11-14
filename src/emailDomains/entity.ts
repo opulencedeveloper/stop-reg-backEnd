@@ -3,24 +3,30 @@ import { IEmailDomain } from "./interface";
 
 const emailDomainSchema = new Schema<IEmailDomain>(
   {
-    disposable_domain: {
+    bot_username: {
       type: String,
       required: true,
-      lowercase: true, 
       trim: true,
+    },
+    bot_password: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    domain: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true,
+      unique: true,
     },
     mx_record: {
       type: String,
       required: true,
-      lowercase: true, 
+      lowercase: true,
       trim: true,
     },
     public_email_provider: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
-    relay_domain: {
       type: Boolean,
       required: true,
       default: false,
@@ -31,10 +37,12 @@ const emailDomainSchema = new Schema<IEmailDomain>(
   }
 );
 
-emailDomainSchema.index({ disposable_domain: 1 }, { unique: true });
+// Indexes
 emailDomainSchema.index({ public_email_provider: 1 });
-emailDomainSchema.index({ relay_domain: 1 });
 
-const EmailDomain = mongoose.model<IEmailDomain>("EmailDomain", emailDomainSchema);
+const EmailDomain = mongoose.model<IEmailDomain>(
+  "EmailDomain",
+  emailDomainSchema
+);
 
 export default EmailDomain;

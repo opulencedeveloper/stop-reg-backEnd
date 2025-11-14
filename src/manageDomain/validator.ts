@@ -1,5 +1,6 @@
 import Joi from "joi";
 import { Request, Response, NextFunction } from "express";
+import { Types } from "mongoose";
 import { MessageResponse } from "../utils/enum";
 import { utils } from "../utils";
 import { IAddDomainUserInput } from "./interface";
@@ -51,6 +52,38 @@ class ManageDomainValidator {
     });
 
     const { error } = schema.validate(req.body, { abortEarly: true });
+
+    if (!error) return next();
+
+    console.error(error);
+
+    return utils.customResponse({
+      status: 400,
+      res,
+      message: MessageResponse.Error,
+      description: error.details[0].message,
+      data: null,
+    });
+  }
+
+  public async validateDomainId(req: Request, res: Response, next: NextFunction) {
+    const schema = Joi.object({
+      domainId: Joi.string()
+        .required()
+        .custom((value, helpers) => {
+          if (!Types.ObjectId.isValid(value)) {
+            return helpers.error("any.invalid");
+          }
+          return value;
+        })
+        .messages({
+          "any.required": "Domain ID is required.",
+          "string.empty": "Domain ID cannot be empty.",
+          "any.invalid": "Domain ID must be a valid ObjectId.",
+        }),
+    });
+
+    const { error } = schema.validate(req.query, { abortEarly: true });
 
     if (!error) return next();
 

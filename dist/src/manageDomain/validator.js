@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.manageDomainValidator = void 0;
 const joi_1 = __importDefault(require("joi"));
+const mongoose_1 = require("mongoose");
 const enum_1 = require("../utils/enum");
 const utils_1 = require("../utils");
 const enum_2 = require("./enum");
@@ -53,6 +54,36 @@ class ManageDomainValidator {
                 }),
             });
             const { error } = schema.validate(req.body, { abortEarly: true });
+            if (!error)
+                return next();
+            console.error(error);
+            return utils_1.utils.customResponse({
+                status: 400,
+                res,
+                message: enum_1.MessageResponse.Error,
+                description: error.details[0].message,
+                data: null,
+            });
+        });
+    }
+    validateDomainId(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const schema = joi_1.default.object({
+                domainId: joi_1.default.string()
+                    .required()
+                    .custom((value, helpers) => {
+                    if (!mongoose_1.Types.ObjectId.isValid(value)) {
+                        return helpers.error("any.invalid");
+                    }
+                    return value;
+                })
+                    .messages({
+                    "any.required": "Domain ID is required.",
+                    "string.empty": "Domain ID cannot be empty.",
+                    "any.invalid": "Domain ID must be a valid ObjectId.",
+                }),
+            });
+            const { error } = schema.validate(req.query, { abortEarly: true });
             if (!error)
                 return next();
             console.error(error);

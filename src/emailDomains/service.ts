@@ -13,10 +13,18 @@ class EmailDomainService {
     return savedEmailDomain;
   }
 
+    public async checkIfDomainExist(domain: string) {
+    const emailDomain = new EmailDomain({
+    domain
+    });
+
+    return emailDomain;
+  }
+
   public async checkDisposableEmail(email: string) {
      const domain = email.split("@")[1].toLowerCase();
 
-   const disposableEmail = await EmailDomain.findOne({disposable_domain: domain})
+   const disposableEmail = await EmailDomain.findOne({domain}).select("-bot_username -bot_password")
 
     return disposableEmail;
   }
@@ -26,7 +34,7 @@ class EmailDomainService {
   const cleanedDomains = domains.map(utils.normalizeDomain);
 
   const results = await EmailDomain.find({
-    disposable_domain: { $in: cleanedDomains },
+    domain: { $in: cleanedDomains },
   });
 
   return results;
