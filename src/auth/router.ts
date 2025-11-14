@@ -18,7 +18,7 @@ AuthRouter.post(
   "/login",
   [authValidator.logIn],
   utils.wrapAsync(authController.logIn)
-);
+);   
 
 AuthRouter.post(
   "/verfy/email",
