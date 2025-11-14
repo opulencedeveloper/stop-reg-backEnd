@@ -41,9 +41,7 @@ const StartServer = () => {
     app.use(general_1.default.Helmet);
     app.use(general_1.default.RateLimiting);
     app.use((0, cors_1.default)({
-        origin: process.env.CORS_ORIGIN
-            ? process.env.CORS_ORIGIN.split(",")
-            : ["http://127.0.0.1:5500"],
+        origin: ["http://127.0.0.1:5500"],
         credentials: true,
     }));
     app.use(express_1.default.json({ limit: "10mb" }));
