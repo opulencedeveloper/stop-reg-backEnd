@@ -111,7 +111,7 @@ class AuthController {
 
       await authService.saveOtp({ email, otp });
 
-      await sendEmailVerificationMail({
+      await sendEmailVerificationMail({  
         email,
         otp,
         expiryTime: "5 minutes",
