@@ -164,7 +164,7 @@ class AuthController {
       return utils.customResponse({
         status: 400,
         res,
-        message: MessageResponse.Success,
+        message: MessageResponse.Error,
         description: "Invalid otp",
         data: null,
       });

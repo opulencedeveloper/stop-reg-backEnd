@@ -139,7 +139,7 @@ class AuthController {
                 return utils_1.utils.customResponse({
                     status: 400,
                     res,
-                    message: enum_1.MessageResponse.Success,
+                    message: enum_1.MessageResponse.Error,
                     description: "Invalid otp",
                     data: null,
                 });
