@@ -6,7 +6,7 @@ import compression from "compression";
 import { Server as HttpServer } from "http";
 
 import Logging from "./src/utils/loggin";
-import { ErrorName, MessageResponse } from "./src/utils/enum";
+import { MessageResponse } from "./src/utils/enum";
 import { AuthRouter } from "./src/auth/router";
 import GeneralMiddleware from "./src/middleware/general";
 import { utils } from "./src/utils";
@@ -42,7 +42,9 @@ const StartServer = () => {
 
   app.use(
     cors({
-      origin: ["http://127.0.0.1:5500"],
+      origin: process.env.CORS_ORIGIN
+        ? process.env.CORS_ORIGIN.split(",")
+        : ["http://127.0.0.1:5500"],
       credentials: true,
     })
   );
@@ -111,6 +113,20 @@ const StartServer = () => {
   const server: HttpServer = app.listen(port, () =>
     Logging.info(`Server is running on port ${port} 🔥🔧`)
   );
+
+  // Graceful shutdown
+  const gracefulShutdown = (signal: string) => {
+    Logging.info(`${signal} signal received: closing HTTP server`);
+    server.close(async () => {
+      Logging.info("HTTP server closed");
+      await mongoose.connection.close();
+      Logging.info("MongoDB connection closed");
+      process.exit(0);
+    });
+  };
+
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+  process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 };
 
 const MONGODB_URI = process.env.MONGODB_URI || "";

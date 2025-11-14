@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -32,7 +41,9 @@ const StartServer = () => {
     app.use(general_1.default.Helmet);
     app.use(general_1.default.RateLimiting);
     app.use((0, cors_1.default)({
-        origin: ["http://127.0.0.1:5500"],
+        origin: process.env.CORS_ORIGIN
+            ? process.env.CORS_ORIGIN.split(",")
+            : ["http://127.0.0.1:5500"],
         credentials: true,
     }));
     app.use(express_1.default.json({ limit: "10mb" }));
@@ -80,6 +91,18 @@ const StartServer = () => {
         });
     });
     const server = app.listen(port, () => loggin_1.default.info(`Server is running on port ${port} 🔥🔧`));
+    // Graceful shutdown
+    const gracefulShutdown = (signal) => {
+        loggin_1.default.info(`${signal} signal received: closing HTTP server`);
+        server.close(() => __awaiter(void 0, void 0, void 0, function* () {
+            loggin_1.default.info("HTTP server closed");
+            yield mongoose_1.default.connection.close();
+            loggin_1.default.info("MongoDB connection closed");
+            process.exit(0);
+        }));
+    };
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 };
 const MONGODB_URI = process.env.MONGODB_URI || "";
 mongoose_1.default
