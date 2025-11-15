@@ -117,7 +117,7 @@ class AuthController {
       // });
 
       return utils.customResponse({
-        status: 200,
+        status: 400,
         res,
         message: MessageResponse.VerifyEmail,
         description: `A  verication otp  has been sent to ${email}!`,

@@ -97,7 +97,7 @@ class AuthController {
                 //   expiryTime: "5 minutes",
                 // });
                 return utils_1.utils.customResponse({
-                    status: 200,
+                    status: 400,
                     res,
                     message: enum_1.MessageResponse.VerifyEmail,
                     description: `A  verication otp  has been sent to ${email}!`,
