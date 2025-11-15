@@ -9,4 +9,5 @@ const validator_1 = require("./validator");
 exports.UserRouter = (0, express_1.Router)();
 exports.UserRouter.get("/info", [is_auth_1.isAuth], utils_1.utils.wrapAsync(controller_1.userController.fetchUserDetails));
 exports.UserRouter.patch("/update/password", [is_auth_1.isAuth, validator_1.userValidator.updateUserPassword], utils_1.utils.wrapAsync(controller_1.userController.updatePassword));
+exports.UserRouter.patch("/update/fullname", [is_auth_1.isAuth, validator_1.userValidator.updateFullName], utils_1.utils.wrapAsync(controller_1.userController.updateFullName));
 exports.UserRouter.patch("/regenerate/token", [is_auth_1.isAuth], utils_1.utils.wrapAsync(controller_1.userController.regenerateUserToken));

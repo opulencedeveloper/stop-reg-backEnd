@@ -50,6 +50,22 @@ class UserService {
     return user;
   }
 
+  public async updateFulNameByUserId(userId: Types.ObjectId, fullName: string) {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { fullName } },
+      { new: true, runValidators: true }
+    )
+      .select("-password")
+      .populate(
+        "planId",
+        "name monthlyPrice apiLimit durationInDays isRecommended"
+      )
+      .lean();
+
+    return updatedUser;
+  }
+
   public async editPasswordById(input: IUpdatePasswordInput) {
     const { userId, password } = input;
 
@@ -87,7 +103,7 @@ class UserService {
     return updatedUser;
   }
 
-   public async decrementApiRequestLeftByAPIToken(
+  public async decrementApiRequestLeftByAPIToken(
     apiToken: string,
     amount: number = 1
   ) {

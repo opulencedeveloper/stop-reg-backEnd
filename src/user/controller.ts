@@ -2,7 +2,10 @@ import { Request, Response } from "express";
 import { CustomRequest } from "../utils/interface";
 import { utils } from "../utils";
 import { MessageResponse } from "../utils/enum";
-import { IUpdatePasswordUserInput } from "./interface";
+import {
+  IUpdateFullNameUserInput,
+  IUpdatePasswordUserInput,
+} from "./interface";
 import { comparePassword } from "../utils/auth";
 import { requestService } from "../request/service";
 import { userService } from "./service";
@@ -93,6 +96,47 @@ class UserController {
       message: MessageResponse.Success,
       description: "API token regenerated successfully",
       data: { apiToken },
+    });
+  }
+
+  public async updateFullName(req: Request, res: Response) {
+    const body: IUpdateFullNameUserInput = req.body;
+
+    const { userId } = req as CustomRequest;
+
+    const userExists = await userService.findUserByIdWithPassword(userId!);
+
+    if (!userExists) {
+      return utils.customResponse({
+        status: 404,
+        res,
+        message: MessageResponse.Error,
+        description: "User not found!",
+        data: null,
+      });
+    }
+
+    const updatedUserDetails = await userService.updateFulNameByUserId(
+      userId!,
+      body.fullName
+    );
+
+    if (!updatedUserDetails) {
+      return utils.customResponse({
+        status: 404,
+        res,
+        message: MessageResponse.Error,
+        description: "User not found!!",
+        data: null,
+      });
+    }
+
+    return utils.customResponse({
+      status: 201,
+      res,
+      message: MessageResponse.Success,
+      description: "FUll name updated successfully",
+      data: { updatedUserDetails },
     });
   }
 }

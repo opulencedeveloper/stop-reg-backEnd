@@ -20,6 +20,12 @@ UserRouter.patch(
 );
 
 UserRouter.patch(
+  "/update/fullname",
+  [isAuth, userValidator.updateFullName],
+  utils.wrapAsync(userController.updateFullName)
+);
+
+UserRouter.patch(
   "/regenerate/token",
   [isAuth],
   utils.wrapAsync(userController.regenerateUserToken)

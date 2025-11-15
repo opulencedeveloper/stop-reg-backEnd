@@ -57,5 +57,29 @@ class UserValidator {
             }
         });
     }
+    updateFullName(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const schema = joi_1.default.object({
+                fullName: joi_1.default.string().required().messages({
+                    "any.required": "Fullname is required.",
+                    "string.empty": "Fullname cannot be empty.",
+                }),
+            });
+            const { error } = schema.validate(req.body);
+            if (!error) {
+                return next();
+            }
+            else {
+                console.error(error);
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: error.details[0].message,
+                    data: null,
+                });
+            }
+        });
+    }
 }
 exports.userValidator = new UserValidator();

@@ -38,3 +38,8 @@ export interface IUpdatePasswordInput {
   password: string;
   userId: Types.ObjectId;
 }
+
+export interface IUpdateFullNameUserInput {
+  fullName: string;
+}
+

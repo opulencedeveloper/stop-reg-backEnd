@@ -54,6 +54,15 @@ class UserService {
             return user;
         });
     }
+    updateFulNameByUserId(userId, fullName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const updatedUser = yield entity_1.default.findOneAndUpdate({ _id: userId }, { $set: { fullName } }, { new: true, runValidators: true })
+                .select("-password")
+                .populate("planId", "name monthlyPrice apiLimit durationInDays isRecommended")
+                .lean();
+            return updatedUser;
+        });
+    }
     editPasswordById(input) {
         return __awaiter(this, void 0, void 0, function* () {
             const { userId, password } = input;

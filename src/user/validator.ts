@@ -2,7 +2,7 @@ import Joi from "joi";
 import { Request, Response, NextFunction } from "express";
 import { MessageResponse } from "../utils/enum";
 import { utils } from "../utils";
-import { IUpdatePasswordUserInput } from "./interface";
+import { IUpdateFullNameUserInput, IUpdatePasswordUserInput } from "./interface";
 
 class UserValidator {
   public async updateUserPassword(
@@ -34,6 +34,35 @@ class UserValidator {
           "any.required": "Confirm password is required.",
           "any.only": "Passwords do not match.",
         }),
+    });
+
+    const { error } = schema.validate(req.body);
+
+    if (!error) {
+      return next();
+    } else {
+      console.error(error);
+
+      return utils.customResponse({
+        status: 400,
+        res,
+        message: MessageResponse.Error,
+        description: error.details[0].message,
+        data: null,
+      });
+    }
+  }
+
+    public async updateFullName(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const schema = Joi.object<IUpdateFullNameUserInput>({
+      fullName: Joi.string().required().messages({
+        "any.required": "Fullname is required.",
+        "string.empty": "Fullname cannot be empty.",
+      }),
     });
 
     const { error } = schema.validate(req.body);

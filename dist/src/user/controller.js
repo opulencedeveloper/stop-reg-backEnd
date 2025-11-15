@@ -90,5 +90,38 @@ class UserController {
             });
         });
     }
+    updateFullName(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const body = req.body;
+            const { userId } = req;
+            const userExists = yield service_2.userService.findUserByIdWithPassword(userId);
+            if (!userExists) {
+                return utils_1.utils.customResponse({
+                    status: 404,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "User not found!",
+                    data: null,
+                });
+            }
+            const updatedUserDetails = yield service_2.userService.updateFulNameByUserId(userId, body.fullName);
+            if (!updatedUserDetails) {
+                return utils_1.utils.customResponse({
+                    status: 404,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "User not found!!",
+                    data: null,
+                });
+            }
+            return utils_1.utils.customResponse({
+                status: 201,
+                res,
+                message: enum_1.MessageResponse.Success,
+                description: "FUll name updated successfully",
+                data: { updatedUserDetails },
+            });
+        });
+    }
 }
 exports.userController = new UserController();
