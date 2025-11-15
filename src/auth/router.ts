@@ -21,7 +21,7 @@ AuthRouter.post(
 );   
 
 AuthRouter.post(
-  "/verfy/email",
+  "/verify/email",
   [authValidator.verifyEmail],
   utils.wrapAsync(authController.emailVerifyOtp)
 );
