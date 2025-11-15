@@ -1,12 +1,12 @@
 import { Router } from "express";
 
 import { utils } from "../utils";
-import { apiTokenValidator } from "./validator";
 import { apiTokenController } from "./controller";
+import { apiTokenValidator } from "./validator";
 
-export const ApiTokenRouter = Router();
+export const MyApiTokenRouter = Router();
 
-ApiTokenRouter.get(
+MyApiTokenRouter.get(
   "/:token",
   [apiTokenValidator.validateAPi],
   utils.wrapAsync(apiTokenController.checkEmail)

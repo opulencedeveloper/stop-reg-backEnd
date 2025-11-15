@@ -14,7 +14,7 @@ import { SubscriptionPlanRouter } from "./src/subscriptionPlan/router";
 import { UserRouter } from "./src/user/router";
 import { ManageDomainRouter } from "./src/manageDomain/router";
 import { EmailDomainRouter } from "./src/emailDomains/router";
-// import { ApiTokenRouter } from "./src/apiToken/router";
+import { MyApiTokenRouter } from "./src/myApiToken/router";
 
 const app: Express = express();
 
@@ -69,7 +69,7 @@ const StartServer = () => {
   });
 
   app.use("/api/v1/auth", AuthRouter);
-  // app.use("/api/v1/check", ApiTokenRouter);
+  app.use("/api/v1/check", MyApiTokenRouter);
   app.use("/api/v1/subscription", SubscriptionPlanRouter);
   app.use("/api/v1/user", UserRouter);
   app.use("/api/v1/manage/domain", ManageDomainRouter);

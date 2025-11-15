@@ -140,7 +140,7 @@ class AuthController {
                     res,
                     message: enum_1.MessageResponse.Error,
                     description: "Invalid otp",
-                    data: null,
+                    data: userOtpValidity,
                 });
             }
             if (userOtpValidity.emailVerified) {

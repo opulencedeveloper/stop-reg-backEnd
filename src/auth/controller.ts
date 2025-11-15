@@ -166,7 +166,7 @@ class AuthController {
         res,
         message: MessageResponse.Error,
         description: "Invalid otp",
-        data: null,
+        data: userOtpValidity,
       });
     }
 
