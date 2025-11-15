@@ -100,7 +100,7 @@ class EmailDomainController {
       res,
       message: MessageResponse.Success,
       description: "Check successful",
-      data: disposableEmail,
+      data: {isDisposable: !!disposableEmail},
     });
   }
 
@@ -155,12 +155,31 @@ class EmailDomainController {
       await userService.decrementApiRequestLeft(userId!, body.domains.length);
     }
 
-    const bulkVerification = await emailDomainService.verifyBulkDomains(
-      body.domains
+    // Normalize domains
+    const normalizedDomains = body.domains.map((domain) =>
+      utils.normalizeDomain(domain.toLowerCase())
     );
 
+    const foundDomains = await emailDomainService.verifyBulkDomains(
+      normalizedDomains
+    );
+    const foundDomainSet = new Set(
+      foundDomains.map((d) => utils.normalizeDomain(d.domain))
+    );
+
+    // Map each domain to its disposable status
+    const results = body.domains.map((domain) => {
+      const normalizedDomain = utils.normalizeDomain(domain.toLowerCase());
+      const isDisposable = foundDomainSet.has(normalizedDomain);
+
+      return {
+        domain,
+        isDisposable,
+      };
+    });
+
     // Calculate success and blocked counts
-    const successCount = bulkVerification.length; // Domains found in DB = successful
+    const successCount = foundDomains.length; // Domains found in DB = successful
     const blockedCount = body.domains.length - successCount; // Domains not found = blocked
 
     await requestService.findRequestByUserIdAndSetStatus({
@@ -175,7 +194,7 @@ class EmailDomainController {
       res,
       message: MessageResponse.Success,
       description: "Verification successful",
-      data: bulkVerification,
+      data: results,
     });
   }
 }

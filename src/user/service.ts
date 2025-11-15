@@ -87,8 +87,27 @@ class UserService {
     return updatedUser;
   }
 
+   public async decrementApiRequestLeftByAPIToken(
+    apiToken: string,
+    amount: number = 1
+  ) {
+    const updatedUser = await User.findOneAndUpdate(
+      { apiToken, apiRequestLeft: { $gt: 0 } },
+      { $inc: { apiRequestLeft: -amount } },
+      { new: true, projection: { _id: 1, apiRequestLeft: 1 } }
+    ).lean();
+
+    return updatedUser;
+  }
+
   public async findUserForRateLimit(userId: Types.ObjectId) {
     return User.findById(userId)
+      .select("_id tokenExpiresAt apiRequestLeft planId")
+      .lean();
+  }
+
+  public async findUserByApiToken(apiToken: string) {
+    return User.findOne({ apiToken })
       .select("_id tokenExpiresAt apiRequestLeft planId")
       .lean();
   }

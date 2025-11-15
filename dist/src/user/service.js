@@ -74,9 +74,22 @@ class UserService {
             return updatedUser;
         });
     }
+    decrementApiRequestLeftByAPIToken(apiToken_1) {
+        return __awaiter(this, arguments, void 0, function* (apiToken, amount = 1) {
+            const updatedUser = yield entity_1.default.findOneAndUpdate({ apiToken, apiRequestLeft: { $gt: 0 } }, { $inc: { apiRequestLeft: -amount } }, { new: true, projection: { _id: 1, apiRequestLeft: 1 } }).lean();
+            return updatedUser;
+        });
+    }
     findUserForRateLimit(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             return entity_1.default.findById(userId)
+                .select("_id tokenExpiresAt apiRequestLeft planId")
+                .lean();
+        });
+    }
+    findUserByApiToken(apiToken) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return entity_1.default.findOne({ apiToken })
                 .select("_id tokenExpiresAt apiRequestLeft planId")
                 .lean();
         });

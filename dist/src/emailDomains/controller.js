@@ -88,7 +88,7 @@ class EmailDomainController {
                 res,
                 message: enum_1.MessageResponse.Success,
                 description: "Check successful",
-                data: disposableEmail,
+                data: { isDisposable: !!disposableEmail },
             });
         });
     }
@@ -137,9 +137,21 @@ class EmailDomainController {
                 }
                 yield service_2.userService.decrementApiRequestLeft(userId, body.domains.length);
             }
-            const bulkVerification = yield service_1.emailDomainService.verifyBulkDomains(body.domains);
+            // Normalize domains
+            const normalizedDomains = body.domains.map((domain) => utils_1.utils.normalizeDomain(domain.toLowerCase()));
+            const foundDomains = yield service_1.emailDomainService.verifyBulkDomains(normalizedDomains);
+            const foundDomainSet = new Set(foundDomains.map((d) => utils_1.utils.normalizeDomain(d.domain)));
+            // Map each domain to its disposable status
+            const results = body.domains.map((domain) => {
+                const normalizedDomain = utils_1.utils.normalizeDomain(domain.toLowerCase());
+                const isDisposable = foundDomainSet.has(normalizedDomain);
+                return {
+                    domain,
+                    isDisposable,
+                };
+            });
             // Calculate success and blocked counts
-            const successCount = bulkVerification.length; // Domains found in DB = successful
+            const successCount = foundDomains.length; // Domains found in DB = successful
             const blockedCount = body.domains.length - successCount; // Domains not found = blocked
             yield service_3.requestService.findRequestByUserIdAndSetStatus({
                 planId: userExists.planId,
@@ -152,7 +164,7 @@ class EmailDomainController {
                 res,
                 message: enum_1.MessageResponse.Success,
                 description: "Verification successful",
-                data: bulkVerification,
+                data: results,
             });
         });
     }
