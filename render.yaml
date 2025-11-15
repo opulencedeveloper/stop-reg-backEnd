@@ -3,10 +3,8 @@ services:
     name: stop-reg-backend
     env: node
     buildCommand: npm install && npm run build
-    startCommand: npm start
+    startCommand: node dist/app.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 8080
 
