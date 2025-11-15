@@ -11,3 +11,4 @@ ApiTokenRouter.get(
   [apiTokenValidator.validateAPi],
   utils.wrapAsync(apiTokenController.checkEmail)
 );
+ 
