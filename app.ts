@@ -121,7 +121,7 @@ const StartServer = () => {
       Logging.info("MongoDB connection closed");
       process.exit(0);
     });
-  };
+  };  
 
   process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
   process.on("SIGINT", () => gracefulShutdown("SIGINT"));
