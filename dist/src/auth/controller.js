@@ -21,7 +21,6 @@ const utils_1 = require("../utils");
 const service_1 = require("../subscriptionPlan/service");
 const enum_2 = require("../subscriptionPlan/enum");
 const service_2 = require("../user/service");
-const email_1 = require("../utils/email");
 const service_3 = require("./service");
 dotenv_1.default.config();
 const jwtSecret = process.env.JWT_SECRET;
@@ -60,11 +59,11 @@ class AuthController {
             yield service_2.userService.createUser(Object.assign(Object.assign({}, body), { planId: plan._id, tokenExpiresAt,
                 apiRequestLeft,
                 apiToken, emailVerificationOtp: otp, emailVerificationOtpExpiration: expiryTime }));
-            (0, email_1.sendEmailVerificationMail)({
-                email: body.email,
-                otp: otp,
-                expiryTime: "5 minutes",
-            });
+            // sendEmailVerificationMail({
+            //   email: body.email,
+            //   otp: otp,
+            //   expiryTime: "5 minutes",
+            // });
             return utils_1.utils.customResponse({
                 status: 201,
                 res,
@@ -92,11 +91,11 @@ class AuthController {
                 const otp = utils_1.utils.generateOtp();
                 const email = userExists.email;
                 yield service_3.authService.saveOtp({ email, otp });
-                yield (0, email_1.sendEmailVerificationMail)({
-                    email,
-                    otp,
-                    expiryTime: "5 minutes",
-                });
+                // sendEmailVerificationMail({
+                //   email,
+                //   otp,
+                //   expiryTime: "5 minutes",
+                // });
                 return utils_1.utils.customResponse({
                     status: 200,
                     res,
@@ -210,11 +209,11 @@ class AuthController {
             const otp = utils_1.utils.generateOtp();
             const email = userExists.email;
             yield service_3.authService.saveOtp({ email, otp });
-            yield (0, email_1.sendEmailVerificationMail)({
-                email,
-                otp,
-                expiryTime: "5 minutes",
-            });
+            // sendEmailVerificationMail({
+            //   email,
+            //   otp,
+            //   expiryTime: "5 minutes",
+            // });
             return utils_1.utils.customResponse({
                 status: 200,
                 res,
