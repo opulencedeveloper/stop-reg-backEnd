@@ -81,10 +81,20 @@ class ManageDomainController {
 
     const { userId } = req as CustomRequest;
 
-    await manageDomainService.deleteDomainByIdAndUserId(
+    const deleteDomain = await manageDomainService.deleteDomainByIdAndUserId(
       domainIdObjectId,
       userId!
     );
+
+    if (!deleteDomain) {
+      return utils.customResponse({
+        status: 400,
+        res,
+        message: MessageResponse.Error,
+        description: "Domain already deleted!",
+        data: null,
+      });
+    }
 
     return utils.customResponse({
       status: 200,

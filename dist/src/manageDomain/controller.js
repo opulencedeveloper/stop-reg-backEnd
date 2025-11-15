@@ -68,7 +68,16 @@ class ManageDomainController {
             const { domainId } = req.query;
             const domainIdObjectId = new mongoose_1.Types.ObjectId(domainId);
             const { userId } = req;
-            yield service_1.manageDomainService.deleteDomainByIdAndUserId(domainIdObjectId, userId);
+            const deleteDomain = yield service_1.manageDomainService.deleteDomainByIdAndUserId(domainIdObjectId, userId);
+            if (!deleteDomain) {
+                return utils_1.utils.customResponse({
+                    status: 400,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "Domain already deleted!",
+                    data: null,
+                });
+            }
             return utils_1.utils.customResponse({
                 status: 200,
                 res,
