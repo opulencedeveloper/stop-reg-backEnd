@@ -4,14 +4,13 @@
 # Usage: ./deploy.sh
 
 SERVER_IP="137.184.93.111"
-SERVER_USER="Stop_ReGzFresh3Log"
-SERVER_PATH="/home/${SERVER_USER}/stop-reg-back-end"
-LOCAL_PATH="."
+SERVER_USER="root"
+SERVER_PATH="/root/stop-reg-back-end"
 
 echo "🚀 Starting deployment to ${SERVER_USER}@${SERVER_IP}..."
 
-# Build the project
-echo "📦 Building TypeScript..."
+# Build TypeScript locally
+echo "🔨 Building TypeScript locally..."
 npm run build
 
 # Create deployment package (exclude node_modules, .git, etc.)
@@ -19,41 +18,44 @@ echo "📦 Creating deployment package..."
 tar --exclude='node_modules' \
     --exclude='.git' \
     --exclude='.env' \
-    --exclude='dist' \
     --exclude='.DS_Store' \
+    --exclude='deploy.tar.gz' \
     -czf deploy.tar.gz .
 
 # Upload to server
 echo "📤 Uploading to server..."
-scp deploy.tar.gz ${SERVER_USER}@${SERVER_IP}:~/
+scp deploy.tar.gz ${SERVER_USER}@${SERVER_IP}:/root/
 
-# SSH and deploy
+# Deploy on the server
 echo "🔧 Deploying on server..."
 ssh ${SERVER_USER}@${SERVER_IP} << 'ENDSSH'
-  # Create directory if it doesn't exist
-  mkdir -p ~/stop-reg-back-end
-  cd ~/stop-reg-back-end
-  
-  # Extract files
-  tar -xzf ~/deploy.tar.gz
-  
-  # Install dependencies
-  npm install --production
-  
-  # Build TypeScript
-  npm run build
-  
-  # Restart PM2 (if using PM2)
-  pm2 restart stop-reg-backend || pm2 start ecosystem.config.js
-  
-  # Clean up
-  rm ~/deploy.tar.gz
-  
-  echo "✅ Deployment complete!"
+  mkdir -p /root/stop-reg-back-end
+  cd /root/stop-reg-back-end
+
+  echo "🧹 Cleaning old dist folder..."
+  rm -rf dist
+
+  echo "📦 Extracting deployment package..."
+  tar -xzf /root/deploy.tar.gz
+
+  echo "📦 Installing production dependencies only..."
+  npm install --omit=dev --ignore-scripts
+
+  echo "▶️ Starting backend with PM2..."
+  if [ -f "ecosystem.config.js" ]; then
+    pm2 restart stop-reg-backend || pm2 start ecosystem.config.js
+  else
+    pm2 restart stop-reg-backend || pm2 start dist/app.js --name stop-reg-backend
+  fi
+
+  pm2 save
+
+  echo "🧹 Cleaning up..."
+  rm /root/deploy.tar.gz
+
+  echo "✅ Deployment complete on server!"
 ENDSSH
 
-# Clean up local files
+# Clean local deploy file
 rm deploy.tar.gz
-
 echo "🎉 Deployment finished!"
-

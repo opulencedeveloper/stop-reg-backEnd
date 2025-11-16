@@ -1,8 +1,8 @@
 import { Document } from "mongoose";
 
 export interface IEmailDomain extends Document {
-  bot_username: string;
-  bot_password: string;
+  // bot_username: string;
+  // bot_password: string;
   domain: string;
   mx_record: string;
   public_email_provider: boolean;

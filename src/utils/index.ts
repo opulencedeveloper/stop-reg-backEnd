@@ -50,7 +50,7 @@ class Utils {
       .toLowerCase();
   };
 
-    public generateOtp = (): string => {
+    public generateOtp = () => {
     return Array.from({ length: 6 }, () => Crypto.randomInt(0, 10)).join("");
   };
 }

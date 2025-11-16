@@ -25,8 +25,8 @@ class EmailDomainService {
     }
     checkIfDomainExist(domain) {
         return __awaiter(this, void 0, void 0, function* () {
-            const emailDomain = new entity_1.default({
-                domain
+            const emailDomain = entity_1.default.findOne({
+                domain,
             });
             return emailDomain;
         });
@@ -47,6 +47,5 @@ class EmailDomainService {
             return results;
         });
     }
-    ;
 }
 exports.emailDomainService = new EmailDomainService();

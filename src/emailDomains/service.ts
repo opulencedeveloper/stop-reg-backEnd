@@ -13,33 +13,33 @@ class EmailDomainService {
     return savedEmailDomain;
   }
 
-    public async checkIfDomainExist(domain: string) {
-    const emailDomain = new EmailDomain({
-    domain
+  public async checkIfDomainExist(domain: string) {
+    const emailDomain = EmailDomain.findOne({
+      domain,
     });
 
     return emailDomain;
   }
 
   public async checkDisposableEmail(email: string) {
-     const domain = email.split("@")[1].toLowerCase();
+    const domain = email.split("@")[1].toLowerCase();
 
-   const disposableEmail = await EmailDomain.findOne({domain}).select("-bot_username -bot_password")
+    const disposableEmail = await EmailDomain.findOne({ domain }).select(
+      "-bot_username -bot_password"
+    );
 
     return disposableEmail;
   }
 
+  public async verifyBulkDomains(domains: string[]) {
+    const cleanedDomains = domains.map(utils.normalizeDomain);
 
-  public async verifyBulkDomains (domains: string[]) {
-  const cleanedDomains = domains.map(utils.normalizeDomain);
+    const results = await EmailDomain.find({
+      domain: { $in: cleanedDomains },
+    });
 
-  const results = await EmailDomain.find({
-    domain: { $in: cleanedDomains },
-  });
-
-  return results;
-};
-
+    return results;
+  }
 }
 
 export const emailDomainService = new EmailDomainService();

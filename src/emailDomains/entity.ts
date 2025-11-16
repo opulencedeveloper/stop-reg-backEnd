@@ -3,16 +3,16 @@ import { IEmailDomain } from "./interface";
 
 const emailDomainSchema = new Schema<IEmailDomain>(
   {
-    bot_username: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    bot_password: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    // bot_username: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
+    // bot_password: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
     domain: {
       type: String,
       required: true,

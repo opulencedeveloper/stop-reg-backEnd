@@ -70,11 +70,11 @@ class AuthController {
       emailVerificationOtpExpiration: expiryTime,
     });
 
-    // sendEmailVerificationMail({
-    //   email: body.email,
-    //   otp: otp,
-    //   expiryTime: "5 minutes",
-    // });
+    sendEmailVerificationMail({
+      email: body.email,
+      otp: otp,
+      expiryTime: "5 minutes",
+    });
 
     return utils.customResponse({
       status: 201,
@@ -110,11 +110,11 @@ class AuthController {
 
       await authService.saveOtp({ email, otp });
 
-      // sendEmailVerificationMail({
-      //   email,
-      //   otp,
-      //   expiryTime: "5 minutes",
-      // });
+      sendEmailVerificationMail({
+        email,
+        otp,
+        expiryTime: "5 minutes",
+      });
 
       return utils.customResponse({
         status: 400,
@@ -248,11 +248,11 @@ class AuthController {
 
     await authService.saveOtp({ email, otp });
 
-    // sendEmailVerificationMail({
-    //   email,
-    //   otp,
-    //   expiryTime: "5 minutes",
-    // });
+    sendEmailVerificationMail({
+      email,
+      otp,
+      expiryTime: "5 minutes",
+    });
 
     return utils.customResponse({
       status: 200,

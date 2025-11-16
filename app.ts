@@ -41,9 +41,14 @@ const StartServer = () => {
 
   app.use(GeneralMiddleware.RateLimiting);
 
+  // CORS configuration - supports both development and production
+  const corsOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
+    : ["http://127.0.0.1:5500", "https://stopreg.com", "https://www.stopreg.com"];
+
   app.use(
     cors({
-      origin: ["http://127.0.0.1:5500"],
+      origin: corsOrigins,
       credentials: true,
     })
   );

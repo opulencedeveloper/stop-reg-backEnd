@@ -60,6 +60,10 @@ export const sendEmail = async (input: ISendEmail) => {
       },
       connectionTimeout: 10000,
       greetingTimeout: 10000,
+      tls: {
+        servername: "smtp.zeptomail.com",
+        rejectUnauthorized: true,
+      },
     });
     return await transport.sendMail(mailOptions);
   };
@@ -75,6 +79,10 @@ export const sendEmail = async (input: ISendEmail) => {
       },
       connectionTimeout: 10000,
       greetingTimeout: 10000,
+      tls: {
+        servername: "smtp.zeptomail.com",
+        rejectUnauthorized: true,
+      },
     });
     return await transport.sendMail(mailOptions);
   };
