@@ -8,17 +8,18 @@ const emailDomainSchema = new Schema<IEmailDomain>(
     //   required: true,
     //   trim: true,
     // },
-    // bot_password: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
+  
     domain: {
       type: String,
       required: true,
       lowercase: true,
       trim: true,
       unique: true,
+    },
+    provider: {
+      type: String,
+      required: true,
+      trim: true,
     },
     mx_record: {
       type: String,

@@ -65,6 +65,10 @@ const sendEmail = (input) => __awaiter(void 0, void 0, void 0, function* () {
             },
             connectionTimeout: 10000,
             greetingTimeout: 10000,
+            tls: {
+                servername: "smtp.zeptomail.com",
+                rejectUnauthorized: true,
+            },
         });
         return yield transport.sendMail(mailOptions);
     });
@@ -79,6 +83,10 @@ const sendEmail = (input) => __awaiter(void 0, void 0, void 0, function* () {
             },
             connectionTimeout: 10000,
             greetingTimeout: 10000,
+            tls: {
+                servername: "smtp.zeptomail.com",
+                rejectUnauthorized: true,
+            },
         });
         return yield transport.sendMail(mailOptions);
     });

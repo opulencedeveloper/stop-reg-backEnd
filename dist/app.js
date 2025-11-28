@@ -41,8 +41,12 @@ const StartServer = () => {
     app.use((0, compression_1.default)());
     app.use(general_1.default.Helmet);
     app.use(general_1.default.RateLimiting);
+    // CORS configuration - supports both development and production
+    const corsOrigins = process.env.CORS_ORIGIN
+        ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
+        : ["http://127.0.0.1:5500", "https://stopreg.com", "https://www.stopreg.com"];
     app.use((0, cors_1.default)({
-        origin: ["http://127.0.0.1:5500", "https://stopreg.com"],
+        origin: corsOrigins,
         credentials: true,
     }));
     app.use(express_1.default.json({ limit: "10mb" }));

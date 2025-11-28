@@ -57,7 +57,7 @@ const userSchema = new mongoose_1.Schema({
     },
     apiRequestLeft: {
         type: Number,
-        default: null,
+        // default: null,
         required: true,
     },
     email: {

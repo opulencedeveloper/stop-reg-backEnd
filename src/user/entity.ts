@@ -25,7 +25,7 @@ const userSchema: Schema = new Schema(
     },
     apiRequestLeft: {
       type: Number,
-      default: null,
+      // default: null,
       required: true,
     },
     email: {

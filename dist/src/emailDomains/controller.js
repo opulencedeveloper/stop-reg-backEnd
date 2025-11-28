@@ -41,7 +41,7 @@ class EmailDomainController {
                     status: 400,
                     res,
                     message: enum_1.MessageResponse.Error,
-                    description: "Permision denied!",
+                    description: "Permission denied!",
                     data: null,
                 });
             }
@@ -51,7 +51,7 @@ class EmailDomainController {
                     status: 400,
                     res,
                     message: enum_1.MessageResponse.Error,
-                    description: "Permision denied!",
+                    description: "Permission denied!",
                     data: null,
                 });
             }
@@ -99,18 +99,18 @@ class EmailDomainController {
                 });
             }
             // Null means this request is unlimited
-            if (userExists.apiRequestLeft !== null) {
-                if (userExists.apiRequestLeft === 0) {
-                    return utils_1.utils.customResponse({
-                        status: 403,
-                        res,
-                        message: enum_1.MessageResponse.Error,
-                        description: "API request limit reached for your current plan.",
-                        data: null,
-                    });
-                }
-                yield service_2.userService.decrementApiRequestLeft(userId);
+            // if (userExists.apiRequestLeft !== null) {
+            if (userExists.apiRequestLeft <= 0) {
+                return utils_1.utils.customResponse({
+                    status: 403,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "API request limit reached for your current plan.",
+                    data: null,
+                });
             }
+            yield service_2.userService.decrementApiRequestLeft(userId);
+            // }
             const disposableEmail = yield service_1.emailDomainService.checkDisposableEmail(body.email);
             yield service_3.requestService.findRequestByUserIdAndSetStatus({
                 planId: userExists.planId,
@@ -153,27 +153,27 @@ class EmailDomainController {
             // Deduplicate domains first (remove duplicates like http://example.com, http://example.com/, etc.)
             const uniqueDomains = this.deduplicateDomains(body.domains);
             // Null means this request is unlimited
-            if (userExists.apiRequestLeft !== null) {
-                if (userExists.apiRequestLeft === 0) {
-                    return utils_1.utils.customResponse({
-                        status: 403,
-                        res,
-                        message: enum_1.MessageResponse.Error,
-                        description: "API request limit reached for your current plan.",
-                        data: null,
-                    });
-                }
-                if (userExists.apiRequestLeft < uniqueDomains.length) {
-                    return utils_1.utils.customResponse({
-                        status: 403,
-                        res,
-                        message: enum_1.MessageResponse.Error,
-                        description: `Insufficient API requests. You have ${userExists.apiRequestLeft} request(s) remaining, but need ${uniqueDomains.length} for this operation.`,
-                        data: null,
-                    });
-                }
-                yield service_2.userService.decrementApiRequestLeft(userId, uniqueDomains.length);
+            // if (userExists.apiRequestLeft !== null) {
+            if (userExists.apiRequestLeft <= 0) {
+                return utils_1.utils.customResponse({
+                    status: 403,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "API request limit reached for your current plan.",
+                    data: null,
+                });
             }
+            if (userExists.apiRequestLeft < uniqueDomains.length) {
+                return utils_1.utils.customResponse({
+                    status: 403,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: `Insufficient API requests. You have ${userExists.apiRequestLeft} request(s) remaining, but need ${uniqueDomains.length} for this operation.`,
+                    data: null,
+                });
+            }
+            yield service_2.userService.decrementApiRequestLeft(userId, uniqueDomains.length);
+            // }
             // Normalize unique domains for database lookup
             const normalizedDomains = uniqueDomains.map((domain) => utils_1.utils.normalizeDomain(domain.toLowerCase()));
             const foundDomains = yield service_1.emailDomainService.verifyBulkDomains(normalizedDomains);
@@ -231,27 +231,27 @@ class EmailDomainController {
             // Deduplicate domains first (remove duplicates like http://example.com, http://example.com/, etc.)
             const uniqueDomains = this.deduplicateDomains(body.domains);
             // Null means this request is unlimited
-            if (userExists.apiRequestLeft !== null) {
-                if (userExists.apiRequestLeft === 0) {
-                    return utils_1.utils.customResponse({
-                        status: 403,
-                        res,
-                        message: enum_1.MessageResponse.Error,
-                        description: "API request limit reached for your current plan.",
-                        data: null,
-                    });
-                }
-                if (userExists.apiRequestLeft < uniqueDomains.length) {
-                    return utils_1.utils.customResponse({
-                        status: 403,
-                        res,
-                        message: enum_1.MessageResponse.Error,
-                        description: `Insufficient API requests. You have ${userExists.apiRequestLeft} request(s) remaining, but need ${uniqueDomains.length} for this operation.`,
-                        data: null,
-                    });
-                }
-                yield service_2.userService.decrementApiRequestLeft(userId, uniqueDomains.length);
+            // if (userExists.apiRequestLeft !== null) {
+            if (userExists.apiRequestLeft <= 0) {
+                return utils_1.utils.customResponse({
+                    status: 403,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: "API request limit reached for your current plan.",
+                    data: null,
+                });
             }
+            if (userExists.apiRequestLeft < uniqueDomains.length) {
+                return utils_1.utils.customResponse({
+                    status: 403,
+                    res,
+                    message: enum_1.MessageResponse.Error,
+                    description: `Insufficient API requests. You have ${userExists.apiRequestLeft} request(s) remaining, but need ${uniqueDomains.length} for this operation.`,
+                    data: null,
+                });
+            }
+            yield service_2.userService.decrementApiRequestLeft(userId, uniqueDomains.length);
+            // }
             // Normalize unique domains for database lookup
             const normalizedDomains = uniqueDomains.map((domain) => utils_1.utils.normalizeDomain(domain.toLowerCase()));
             const foundDomains = yield service_1.emailDomainService.verifyBulkDomains(normalizedDomains);

@@ -4,8 +4,8 @@ exports.SubPlan = void 0;
 var SubPlan;
 (function (SubPlan) {
     SubPlan["Free"] = "Free";
-    SubPlan["Standard"] = "Standard";
-    SubPlan["Plus"] = "Plus";
-    SubPlan["Pro"] = "Pro";
-    SubPlan["Max"] = "Max";
+    SubPlan["Starter"] = "Starter";
+    SubPlan["Developer"] = "Developer";
+    SubPlan["Business"] = "Business";
+    SubPlan["Enterprise"] = "Enterprise";
 })(SubPlan || (exports.SubPlan = SubPlan = {}));

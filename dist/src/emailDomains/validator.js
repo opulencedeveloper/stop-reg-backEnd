@@ -29,6 +29,10 @@ class EmailDomainValidator {
                     "any.required": "Bot password is required.",
                     "string.empty": "Bot password cannot be empty.",
                 }),
+                provider: joi_1.default.string().trim().required().messages({
+                    "any.required": "Provider is required.",
+                    "string.empty": "Provider cannot be empty.",
+                }),
                 domain: joi_1.default.string()
                     .trim()
                     .pattern(/^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/)

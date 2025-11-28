@@ -34,8 +34,8 @@ class ApiTokenController {
     }
 
     // Null means this request is unlimited
-    if (userExists.apiRequestLeft !== null) {
-      if (userExists.apiRequestLeft === 0) {
+    // if (userExists.apiRequestLeft !== null) {
+      if (userExists.apiRequestLeft  <= 0) {
         return utils.customResponse({
           status: 403,
           res,
@@ -46,7 +46,7 @@ class ApiTokenController {
       }
 
       await userService.decrementApiRequestLeftByAPIToken(token);
-    }
+    // }
 
     const disposableEmail = await emailDomainService.checkDisposableEmail(
       email

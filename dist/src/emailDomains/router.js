@@ -14,4 +14,4 @@ exports.EmailDomainRouter.post("/bulk-verification", [is_auth_1.isAuth, validato
 exports.EmailDomainRouter.post("/bulk-verification-csv", [is_auth_1.isAuth, validator_1.emailDomainValidator.bulkDomainVerification], utils_1.utils.wrapAsync(controller_1.emailDomainController.bulkDomainVerificationCSV.bind(controller_1.emailDomainController)));
 exports.EmailDomainRouter.post("/create-bot", 
 // [isAuth, emailDomainValidator.bulkDomainVerification],
-utils_1.utils.wrapAsync(controller_2.myBotController.createBot.bind(controller_1.emailDomainController)));
+utils_1.utils.wrapAsync(controller_2.myBotController.createBot.bind(controller_2.myBotController)));

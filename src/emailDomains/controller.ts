@@ -45,7 +45,7 @@ class EmailDomainController {
         status: 400,
         res,
         message: MessageResponse.Error,
-        description: "Permision denied!",
+        description: "Permission denied!",
         data: null,
       });
     }
@@ -57,7 +57,7 @@ class EmailDomainController {
         status: 400,
         res,
         message: MessageResponse.Error,
-        description: "Permision denied!",
+        description: "Permission denied!",
         data: null,
       });
     }
@@ -114,8 +114,8 @@ class EmailDomainController {
     }
 
     // Null means this request is unlimited
-    if (userExists.apiRequestLeft !== null) {
-      if (userExists.apiRequestLeft === 0) {
+    // if (userExists.apiRequestLeft !== null) {
+      if (userExists.apiRequestLeft <= 0) {
         return utils.customResponse({
           status: 403,
           res,
@@ -126,7 +126,7 @@ class EmailDomainController {
       }
 
       await userService.decrementApiRequestLeft(userId!);
-    }
+    // }
 
     const disposableEmail = await emailDomainService.checkDisposableEmail(
       body.email
@@ -178,8 +178,8 @@ class EmailDomainController {
     const uniqueDomains = this.deduplicateDomains(body.domains);
 
     // Null means this request is unlimited
-    if (userExists.apiRequestLeft !== null) {
-      if (userExists.apiRequestLeft === 0) {
+    // if (userExists.apiRequestLeft !== null) {
+      if (userExists.apiRequestLeft <= 0) {
         return utils.customResponse({
           status: 403,
           res,
@@ -187,7 +187,7 @@ class EmailDomainController {
           description: "API request limit reached for your current plan.",
           data: null,
         });
-      }
+     }
 
       if (userExists.apiRequestLeft < uniqueDomains.length) {
         return utils.customResponse({
@@ -200,7 +200,7 @@ class EmailDomainController {
       }
 
       await userService.decrementApiRequestLeft(userId!, uniqueDomains.length);
-    }
+    // }
 
     // Normalize unique domains for database lookup
     const normalizedDomains = uniqueDomains.map((domain) =>
@@ -275,8 +275,8 @@ class EmailDomainController {
     const uniqueDomains = this.deduplicateDomains(body.domains);
 
     // Null means this request is unlimited
-    if (userExists.apiRequestLeft !== null) {
-      if (userExists.apiRequestLeft === 0) {
+    // if (userExists.apiRequestLeft !== null) {
+      if (userExists.apiRequestLeft <= 0) {
         return utils.customResponse({
           status: 403,
           res,
@@ -297,7 +297,7 @@ class EmailDomainController {
       }
 
       await userService.decrementApiRequestLeft(userId!, uniqueDomains.length);
-    }
+    // }
 
     // Normalize unique domains for database lookup
     const normalizedDomains = uniqueDomains.map((domain) =>

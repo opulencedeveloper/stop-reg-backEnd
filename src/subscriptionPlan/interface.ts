@@ -5,7 +5,7 @@ export interface ISubscriptionPlan extends Document {
   _id: Types.ObjectId;
   name: SubPlan;             
   monthlyPrice: number;     
-  apiLimit: number | null;
+  apiLimit: number;
   durationInDays: number;      
   isRecommended: boolean;   
   createdAt?: Date;

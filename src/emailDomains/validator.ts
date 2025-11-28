@@ -18,6 +18,11 @@ public async addEmailDomain(req: Request, res: Response, next: NextFunction) {
       "string.empty": "Bot password cannot be empty.",
     }),
 
+   provider: Joi.string().trim().required().messages({
+      "any.required": "Provider is required.",
+      "string.empty": "Provider cannot be empty.",
+    }),
+
     domain: Joi.string()
       .trim()
       .pattern(/^(?!:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/)

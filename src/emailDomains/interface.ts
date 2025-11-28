@@ -2,7 +2,7 @@ import { Document } from "mongoose";
 
 export interface IEmailDomain extends Document {
   // bot_username: string;
-  // bot_password: string;
+  provider: string;
   domain: string;
   mx_record: string;
   public_email_provider: boolean;
@@ -11,6 +11,7 @@ export interface IEmailDomain extends Document {
 export interface IAddEmailDomainUserInput {
   bot_username: string;
   bot_password: string;
+  provider: string;
   domain: string;
   mx_record: string;
   public_email_provider: boolean;

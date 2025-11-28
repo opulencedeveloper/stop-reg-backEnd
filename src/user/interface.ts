@@ -7,7 +7,7 @@ export interface IUser extends Document {
   fullName?: string;
   tokenExpiresAt: Date;
   apiToken: string;
-  apiRequestLeft: number | null;
+  apiRequestLeft: number;
   email: string;
   password: string;
   emailVerified: boolean;
